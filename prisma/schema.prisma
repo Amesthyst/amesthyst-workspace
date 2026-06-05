@@ -1,0 +1,295 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  industry  String?
+  website   String?
+  logo      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users       User[]
+  departments Department[]
+  employees   Employee[]
+  leads       Lead[]
+  contacts    Contact[]
+  projects    Project[]
+  settings    CompanySettings?
+  auditLogs   AuditLog[]
+}
+
+model Role {
+  id          String @id @default(cuid())
+  name        String @unique
+
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id    String @id @default(cuid())
+  name  String @unique
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+
+  @@id([roleId, permissionId])
+}
+
+model User {
+  id          String   @id
+  companyId   String
+  roleId      String
+
+  email       String   @unique
+  name        String?
+  avatar      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company      Company      @relation(fields: [companyId], references: [id])
+
+  role         Role      @relation(fields: [roleId], references: [id])
+
+  employee     Employee?
+
+  taskComments TaskComment[]
+  notifications Notification[]
+  auditLogs    AuditLog[]
+}
+
+model Department {
+  id          String @id @default(cuid())
+  companyId   String
+
+  name        String
+  description String?
+
+  company      Company      @relation(fields: [companyId], references: [id])
+
+  employees    Employee[]
+}
+
+model Employee {
+  id            String @id @default(cuid())
+
+  companyId     String
+  userId        String @unique
+  departmentId  String?
+
+  jobTitle      String?
+  hireDate      DateTime?
+
+  status        String @default("ACTIVE")
+
+  company       Company      @relation(fields: [companyId], references: [id])
+
+  user          User      @relation(fields: [userId], references: [id])
+
+  department    Department?      @relation(fields: [departmentId], references: [id])
+
+  leaveRequests LeaveRequest[]
+  attendance    Attendance[]
+}
+
+model LeaveRequest {
+  id          String @id @default(cuid())
+
+  employeeId  String
+
+  startDate   DateTime
+  endDate     DateTime
+
+  reason      String
+
+  status      String @default("PENDING")
+
+  employee Employee      @relation(fields: [employeeId], references: [id])
+}
+
+model Attendance {
+  id          String @id @default(cuid())
+
+  employeeId  String
+
+  clockIn     DateTime
+  clockOut    DateTime?
+
+  employee Employee      @relation(fields: [employeeId], references: [id])
+}
+
+model Lead {
+  id          String @id @default(cuid())
+
+  companyId   String
+
+  name        String
+  email       String?
+  phone       String?
+
+  status      String
+
+  source      String?
+
+  company     Company      @relation(fields: [companyId], references: [id])
+
+  activities  Activity[]
+  notes       Note[]
+}
+
+model Contact {
+  id          String @id @default(cuid())
+
+  companyId   String
+
+  name        String
+  email       String?
+  phone       String?
+
+  company Company      @relation(fields: [companyId], references: [id])
+}
+
+model Activity {
+  id          String @id @default(cuid())
+
+  leadId      String
+
+  type        String
+  description String
+
+  createdAt   DateTime @default(now())
+
+  lead Lead      @relation(fields: [leadId], references: [id])
+}
+
+model Note {
+  id          String @id @default(cuid())
+
+  leadId      String
+
+  content     String
+
+  createdAt   DateTime @default(now())
+
+  lead Lead      @relation(fields: [leadId], references: [id])
+}
+
+model Project {
+  id          String @id @default(cuid())
+
+  companyId   String
+
+  name        String
+  description String?
+
+  status      String
+
+  startDate   DateTime?
+  endDate     DateTime?
+
+  company Company      @relation(fields: [companyId], references: [id])
+
+  tasks Task[]
+}
+
+model Task {
+  id          String @id @default(cuid())
+
+  projectId   String
+  assigneeId  String?
+
+  title       String
+  description String?
+
+  status      String
+
+  priority    String?
+
+  dueDate     DateTime?
+
+  project Project      @relation(fields: [projectId], references: [id])
+
+  comments TaskComment[]
+}
+
+model TaskComment {
+  id          String @id @default(cuid())
+
+  taskId      String
+  userId      String
+
+  content     String
+
+  createdAt   DateTime @default(now())
+
+  task Task      @relation(fields: [taskId], references: [id])
+
+  user User      @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id          String @id @default(cuid())
+
+  userId      String
+
+  title       String
+  message     String
+
+  isRead      Boolean @default(false)
+
+  createdAt   DateTime @default(now())
+
+  user User      @relation(fields: [userId], references: [id])
+}
+
+model AuditLog {
+  id          String @id @default(cuid())
+
+  companyId   String
+  userId      String
+
+  action      String
+  entity      String
+  entityId    String
+
+  createdAt   DateTime @default(now())
+
+  company Company      @relation(fields: [companyId], references: [id])
+
+  user User      @relation(fields: [userId], references: [id])
+}
+
+model CompanySettings {
+  id          String @id @default(cuid())
+
+  companyId   String @unique
+
+  timezone    String?
+  currency    String?
+  theme       String?
+
+  company Company      @relation(fields: [companyId], references: [id])
+}
