@@ -17,8 +17,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { logout } from "@/lib/auth/logout";
 
+import { useAuth } from "@/lib/context/AuthContext";
+
+import {
+  canManageHR,
+  canManageCompany,
+  canManageCRM,
+  canManageProjects,
+} from "@/lib/auth/permissions";
+
 export default function Sidebar() {
   const pathname = usePathname();
+
+  const { user } = useAuth();
 
   const [crmOpen, setCrmOpen] = useState(true);
 
@@ -31,6 +42,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-72 border-r bg-white flex flex-col">
+
       {/* LOGO */}
       <div className="h-16 border-b flex items-center px-6">
         <div>
@@ -47,7 +59,7 @@ export default function Sidebar() {
       {/* NAVIGATION */}
       <nav className="flex-1 p-4 space-y-1">
 
-        {/* Dashboard */}
+        {/* DASHBOARD */}
         <Link
           href="/portal/dashboard"
           className={`
@@ -65,173 +77,176 @@ export default function Sidebar() {
           Dashboard
         </Link>
 
-        {/* CRM GROUP */}
-        <div>
+        {/* CRM */}
+        {canManageCRM(user) && (
+          <div>
 
-          <button
-            onClick={() => setCrmOpen(!crmOpen)}
-            className={`
-              w-full
-              flex
-              items-center
-              justify-between
-              rounded-lg
-              px-3
-              py-2
-              text-sm
-              transition-all
-              hover:bg-muted
-            `}
-          >
-            <div className="flex items-center gap-3">
-              <Users size={18} />
-              CRM
-            </div>
+            <button
+              onClick={() => setCrmOpen(!crmOpen)}
+              className="
+                w-full
+                flex
+                items-center
+                justify-between
+                rounded-lg
+                px-3
+                py-2
+                text-sm
+                transition-all
+                hover:bg-muted
+              "
+            >
+              <div className="flex items-center gap-3">
+                <Users size={18} />
+                CRM
+              </div>
 
-            <ChevronDown
-              size={16}
-              className={`
-                transition-transform
-                ${crmOpen ? "rotate-180" : ""}
-              `}
-            />
-          </button>
-
-          {crmOpen && (
-            <div className="ml-8 mt-1 space-y-1">
-
-              <Link
-                href="/portal/crm"
+              <ChevronDown
+                size={16}
                 className={`
-                    block rounded-lg px-3 py-2 text-sm transition-all
+                  transition-transform
+                  ${crmOpen ? "rotate-180" : ""}
+                `}
+              />
+            </button>
+
+            {crmOpen && (
+              <div className="ml-8 mt-1 space-y-1">
+
+                <Link
+                  href="/portal/crm"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
                     ${
                       pathname === "/portal/crm"
                         ? "bg-primary text-primary-foreground"
                         : "hover:bg-muted"
                     }
                   `}
-              >
-                Leads
-              </Link>
+                >
+                  Leads
+                </Link>
 
-              <Link
-                href="/portal/crm/pipeline"
-                className={`
-                    block rounded-lg px-3 py-2 text-sm transition-all
+                <Link
+                  href="/portal/crm/pipeline"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
                     ${
                       isActive("/portal/crm/pipeline")
                         ? "bg-primary text-primary-foreground"
                         : "hover:bg-muted"
                     }
                   `}
-              >
-                Pipeline
-              </Link>
+                >
+                  Pipeline
+                </Link>
 
-              <Link
-                href="/portal/crm/activities"
-                className={`
-                    block rounded-lg px-3 py-2 text-sm transition-all
+                <Link
+                  href="/portal/crm/activities"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
                     ${
                       isActive("/portal/crm/activities")
                         ? "bg-primary text-primary-foreground"
                         : "hover:bg-muted"
                     }
                   `}
-              >
-                Activities
-              </Link>
-
-              <Link
-                href="/portal/crm/analytics"
-                className={`
-                    block rounded-lg px-3 py-2 text-sm
-                    ${
-                    pathname.startsWith(
-                        "/portal/crm/analytics"
-                    )
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
-                    }
-                `}
                 >
-                Analytics
+                  Activities
                 </Link>
 
                 <Link
-                    href="/portal/crm/contacts"
-                    className={`
-                        block rounded-lg px-3 py-2 text-sm
-                        ${
-                        pathname.startsWith(
-                            "/portal/crm/contacts"
-                        )
-                            ? "bg-primary text-primary-foreground"
-                            : "hover:bg-muted"
-                        }
-                    `}
-                    >
-                    Contacts
+                  href="/portal/crm/analytics"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      isActive("/portal/crm/analytics")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  Analytics
                 </Link>
 
-            </div>
-          )}
+                <Link
+                  href="/portal/crm/contacts"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      isActive("/portal/crm/contacts")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  Contacts
+                </Link>
 
-        </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* HRIS */}
-        <Link
-          href="/portal/hris"
-          className={`
-            flex items-center gap-3
-            rounded-lg px-3 py-2
-            text-sm transition-all
-            ${
-              isActive("/portal/hris")
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }
-          `}
-        >
-          <Building2 size={18} />
-          HRIS
-        </Link>
+        {canManageHR(user) && (
+          <Link
+            href="/portal/hris"
+            className={`
+              flex items-center gap-3
+              rounded-lg px-3 py-2
+              text-sm transition-all
+              ${
+                isActive("/portal/hris")
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }
+            `}
+          >
+            <Building2 size={18} />
+            HRIS
+          </Link>
+        )}
 
-        {/* Projects */}
-        <Link
-          href="/portal/projects"
-          className={`
-            flex items-center gap-3
-            rounded-lg px-3 py-2
-            text-sm transition-all
-            ${
-              isActive("/portal/projects")
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }
-          `}
-        >
-          <Briefcase size={18} />
-          Projects
-        </Link>
+        {/* PROJECTS */}
+        {canManageProjects(user) && (
+          <Link
+            href="/portal/projects"
+            className={`
+              flex items-center gap-3
+              rounded-lg px-3 py-2
+              text-sm transition-all
+              ${
+                isActive("/portal/projects")
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }
+            `}
+          >
+            <Briefcase size={18} />
+            Projects
+          </Link>
+        )}
 
-        {/* Settings */}
-        <Link
-          href="/portal/settings"
-          className={`
-            flex items-center gap-3
-            rounded-lg px-3 py-2
-            text-sm transition-all
-            ${
-              isActive("/portal/settings")
-                ? "bg-primary text-primary-foreground"
-                : "hover:bg-muted"
-            }
-          `}
-        >
-          <Settings size={18} />
-          Settings
-        </Link>
+        {/* SETTINGS */}
+        {canManageCompany(user) && (
+          <Link
+            href="/portal/settings"
+            className={`
+              flex items-center gap-3
+              rounded-lg px-3 py-2
+              text-sm transition-all
+              ${
+                isActive("/portal/settings")
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              }
+            `}
+          >
+            <Settings size={18} />
+            Settings
+          </Link>
+        )}
 
       </nav>
 
@@ -240,11 +255,11 @@ export default function Sidebar() {
 
         <div>
           <p className="font-medium text-sm">
-            Amesthyst Admin
+            {user?.name || "User"}
           </p>
 
           <p className="text-xs text-muted-foreground">
-            Portfolio Workspace
+            {user?.role?.name || "No Role"}
           </p>
         </div>
 
@@ -258,6 +273,7 @@ export default function Sidebar() {
         </Button>
 
       </div>
+
     </aside>
   );
 }

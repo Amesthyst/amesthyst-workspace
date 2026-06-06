@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 export default function RegisterPage() {
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,8 @@ export default function RegisterPage() {
     const supabase = createClient();
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    // 1. Create auth user
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -30,12 +32,27 @@ export default function RegisterPage() {
       return;
     }
 
-    await fetch("/api/auth/sync", {
+    // 2. Sync to DB with name
+    const res = await fetch("/api/auth/sync", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+      }),
     });
 
-    router.push("/login");
+    if (!res.ok) {
+      alert("Failed to sync user");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(false);
+
+    router.push("/onboarding");
+    router.refresh();
   }
 
   return (
@@ -48,6 +65,12 @@ export default function RegisterPage() {
             Start your Amesthyst Workspace journey
           </p>
         </div>
+
+        <Input
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
 
         <Input
           placeholder="Email"

@@ -1,8 +1,7 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
+import { createClient } from "@/lib/supabase/server";
 
-export async function GET() {
+export async function validateHRAccess() {
   const supabase = await createClient();
 
   const {
@@ -10,10 +9,7 @@ export async function GET() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 }
-    );
+    return null;
   }
 
   const dbUser = await prisma.user.findUnique({
@@ -22,10 +18,21 @@ export async function GET() {
     },
     include: {
       role: true,
-      company: true,
-      employee: true,
     },
   });
 
-  return NextResponse.json(dbUser);
+  if (!dbUser) {
+    return null;
+  }
+
+  const role = dbUser.role?.name;
+
+  if (
+    role !== "OWNER" &&
+    role !== "ADMIN"
+  ) {
+    return null;
+  }
+
+  return dbUser;
 }

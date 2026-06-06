@@ -1,16 +1,24 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
 import { createClient } from "@/lib/supabase/client";
 
 type AuthContextType = {
   user: any;
   loading: boolean;
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
+  refreshUser: async () => {},
 });
 
 export function AuthProvider({
@@ -23,27 +31,55 @@ export function AuthProvider({
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadUser() {
-      const { data: { user } } = await supabase.auth.getUser();
+  async function loadUser() {
+    setLoading(true);
 
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser();
 
+    if (!authUser) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
+    try {
       const res = await fetch("/api/user/me");
       const dbUser = await res.json();
 
       setUser(dbUser);
-      setLoading(false);
+    } catch (err) {
+      console.error("Failed to load user:", err);
+      setUser(null);
     }
 
+    setLoading(false);
+  }
+
+  useEffect(() => {
     loadUser();
+
+    // 🔥 IMPORTANT: listen auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
+      loadUser();
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        refreshUser: loadUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

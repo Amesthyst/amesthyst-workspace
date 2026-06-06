@@ -1,37 +1,63 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
+
+function generateCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
 
-  const { name, industry, userId, email } = body;
+    const { name, industry, userId } = body;
 
-  if (!name || !userId) {
+    const ownerRole = await prisma.role.findUnique({
+      where: {
+        name: "OWNER",
+      },
+    });
+
+    if (!ownerRole) {
+      return NextResponse.json(
+        { error: "OWNER role not found" },
+        { status: 500 }
+      );
+    }
+
+    const company = await prisma.company.create({
+      data: {
+        name,
+        industry,
+        code: generateCode(),
+      },
+    });
+
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        companyId: company.id,
+        roleId: ownerRole.id,
+      },
+    });
+
+    await prisma.employee.create({
+      data: {
+        companyId: company.id,
+        userId,
+        jobTitle: "Owner",
+        status: "ACTIVE",
+      },
+    });
+
+    return NextResponse.json(company);
+  } catch (error) {
+    console.error(error);
+
     return NextResponse.json(
-      { error: "Missing fields" },
-      { status: 400 }
+      { error: "Failed to create company" },
+      { status: 500 }
     );
   }
-
-  const company = await prisma.company.create({
-    data: {
-      name,
-      industry,
-    },
-  });
-
-  // assign role (you already seeded roles earlier)
-  const role = await prisma.role.findFirst({
-    where: { name: "COMPANY_ADMIN" },
-  });
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: {
-      companyId: company.id,
-      roleId: role?.id,
-    },
-  });
-
-  return NextResponse.json({ success: true });
 }
