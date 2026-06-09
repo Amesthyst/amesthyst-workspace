@@ -21,9 +21,15 @@ type Activity = {
   createdAt: string;
 };
 
+type AttendanceState = {
+  type?: "CLOCK_IN" | "CLOCK_OUT";
+  message?: string;
+};
+
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+
   const [analytics, setAnalytics] = useState<any>(null);
 
   const [stats, setStats] = useState<DashboardStats>({
@@ -35,6 +41,13 @@ export default function DashboardPage() {
 
   const [activities, setActivities] = useState<Activity[]>([]);
   const [statsLoading, setStatsLoading] = useState(true);
+
+  // 🟢 ATTENDANCE STATE (UNCHANGED FEATURE + ENHANCED SYNC)
+  const [attendanceLoading, setAttendanceLoading] = useState(false);
+  const [attendanceState, setAttendanceState] =
+    useState<AttendanceState | null>(null);
+
+  const [todayAttendance, setTodayAttendance] = useState<any>(null);
 
   // -----------------------
   // LOAD DATA
@@ -65,16 +78,54 @@ export default function DashboardPage() {
   useEffect(() => {
     async function loadAnalytics() {
       if (!user?.companyId) return;
-  
+
       const res = await fetch(
         `/api/dashboard/analytics?companyId=${user.companyId}`
       );
-  
+
       const data = await res.json();
       setAnalytics(data);
     }
-  
+
     loadAnalytics();
+  }, [user]);
+
+  // -----------------------
+  // 🟢 LOAD TODAY ATTENDANCE (NEW FEATURE)
+  // -----------------------
+  async function loadTodayAttendance() {
+    if (!user?.companyId) return;
+
+    const res = await fetch(
+      `/api/hris/attendance/list?companyId=${user.companyId}`
+    );
+
+    const json = await res.json();
+
+    const today = json.find((a: any) => {
+      const d = new Date(a.clockIn);
+      const now = new Date();
+
+      return (
+        d.getDate() === now.getDate() &&
+        d.getMonth() === now.getMonth() &&
+        d.getFullYear() === now.getFullYear()
+      );
+    });
+
+    setTodayAttendance(today || null);
+
+    if (!today) {
+      setAttendanceState(null);
+    } else if (today.clockOut) {
+      setAttendanceState({ type: "CLOCK_OUT" });
+    } else {
+      setAttendanceState({ type: "CLOCK_IN" });
+    }
+  }
+
+  useEffect(() => {
+    loadTodayAttendance();
   }, [user]);
 
   // -----------------------
@@ -91,26 +142,11 @@ export default function DashboardPage() {
     );
   }
 
-  // -----------------------
-  // UI HELPERS
-  // -----------------------
   const kpi = [
-    {
-      label: "Total Leads",
-      value: stats.leads,
-    },
-    {
-      label: "Employees",
-      value: stats.employees,
-    },
-    {
-      label: "Projects",
-      value: stats.projects,
-    },
-    {
-      label: "Won Deals",
-      value: stats.wonDeals,
-    },
+    { label: "Total Leads", value: stats.leads },
+    { label: "Employees", value: stats.employees },
+    { label: "Projects", value: stats.projects },
+    { label: "Won Deals", value: stats.wonDeals },
   ];
 
   return (
@@ -129,7 +165,6 @@ export default function DashboardPage() {
 
       {/* KPI SECTION */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-
         {kpi.map((item) => (
           <Card
             key={item.label}
@@ -144,70 +179,64 @@ export default function DashboardPage() {
             </h2>
           </Card>
         ))}
-
       </div>
 
       {/* ANALYTICS SECTION */}
       <div className="grid lg:grid-cols-2 gap-6">
 
-      {/* PIPELINE BREAKDOWN */}
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">
-          Deal Stages
-        </h2>
+        {/* PIPELINE */}
+        <Card className="p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Deal Stages
+          </h2>
 
-        {analytics && (
-          <div className="space-y-3 text-sm">
+          {analytics && (
+            <div className="space-y-3 text-sm">
+              <p>NEW: {analytics.pipeline.NEW}</p>
+              <p>CONTACTED: {analytics.pipeline.CONTACTED}</p>
+              <p>WON: {analytics.pipeline.WON}</p>
+              <p>LOST: {analytics.pipeline.LOST}</p>
+            </div>
+          )}
+        </Card>
 
-            <p>NEW: {analytics.pipeline.NEW}</p>
-            <p>CONTACTED: {analytics.pipeline.CONTACTED}</p>
-            <p>WON: {analytics.pipeline.WON}</p>
-            <p>LOST: {analytics.pipeline.LOST}</p>
+        {/* INSIGHTS */}
+        <Card className="p-6">
+          <h2 className="text-lg font-semibold mb-4">
+            Sales Insights
+          </h2>
 
-          </div>
-        )}
-      </Card>
+          {analytics && (
+            <div className="space-y-4 text-sm text-muted-foreground">
+              <p>
+                💰 Revenue:{" "}
+                <span className="text-black font-medium">
+                  ${analytics.revenue}
+                </span>
+              </p>
 
-      {/* SALES INSIGHTS */}
-      <Card className="p-6">
-        <h2 className="text-lg font-semibold mb-4">
-          Sales Insights
-        </h2>
+              <p>
+                📊 Win Rate:{" "}
+                <span className="text-black font-medium">
+                  {analytics.winRate.toFixed(1)}%
+                </span>
+              </p>
 
-        {analytics && (
-          <div className="space-y-4 text-sm text-muted-foreground">
-
-            <p>
-              💰 Revenue:{" "}
-              <span className="text-black font-medium">
-                ${analytics.revenue}
-              </span>
-            </p>
-
-            <p>
-              📊 Win Rate:{" "}
-              <span className="text-black font-medium">
-                {analytics.winRate.toFixed(1)}%
-              </span>
-            </p>
-
-            <p>
-              📈 Forecast:{" "}
-              <span className="text-black font-medium">
-                ${analytics.forecast}
-              </span>
-            </p>
-
-          </div>
-        )}
-      </Card>
-
+              <p>
+                📈 Forecast:{" "}
+                <span className="text-black font-medium">
+                  ${analytics.forecast}
+                </span>
+              </p>
+            </div>
+          )}
+        </Card>
       </div>
 
       {/* MAIN GRID */}
       <div className="grid lg:grid-cols-3 gap-6">
 
-        {/* LEFT - ACTIVITY FEED */}
+        {/* ACTIVITY */}
         <Card className="p-6 lg:col-span-2">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">
@@ -225,10 +254,9 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-4">
-
             {activities.length === 0 ? (
               <p className="text-muted-foreground text-sm">
-                No activity yet. Start by creating leads or projects.
+                No activity yet.
               </p>
             ) : (
               activities.map((a) => (
@@ -237,9 +265,7 @@ export default function DashboardPage() {
                   className="border-b pb-3 last:border-none"
                 >
                   <div className="flex justify-between">
-                    <p className="font-medium">
-                      {a.type}
-                    </p>
+                    <p className="font-medium">{a.type}</p>
 
                     <p className="text-xs text-muted-foreground">
                       {new Date(a.createdAt).toLocaleString()}
@@ -252,42 +278,92 @@ export default function DashboardPage() {
                 </div>
               ))
             )}
-
           </div>
         </Card>
 
-        {/* RIGHT - INSIGHTS + ACTIONS */}
+        {/* RIGHT PANEL */}
         <div className="space-y-6">
 
-          {/* INSIGHTS */}
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold mb-4">
-              Insights
-            </h2>
+          {/* 🟢 ATTENDANCE CARD (ENHANCED - NO UX CHANGE) */}
+          <Card className="p-6 space-y-4 border-l-4 border-primary">
 
-            <div className="space-y-3 text-sm text-muted-foreground">
+            <div>
+              <h2 className="text-lg font-semibold">
+                Work Attendance
+              </h2>
 
-              <p>
-                • Your CRM is active with{" "}
-                <span className="font-medium text-black">
-                  {stats.leads}
-                </span>{" "}
-                leads.
+              <p className="text-sm text-muted-foreground">
+                Track your daily working session
               </p>
-
-              <p>
-                • Conversion rate improving if Won Deals increase.
-              </p>
-
-              <p>
-                • Projects are currently at{" "}
-                <span className="font-medium text-black">
-                  {stats.projects}
-                </span>
-                .
-              </p>
-
             </div>
+
+            {/* STATUS */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">
+                Status
+              </span>
+
+              <span
+                className={`text-xs px-3 py-1 rounded-full font-medium ${
+                  attendanceState?.type === "CLOCK_IN"
+                    ? "bg-green-100 text-green-700"
+                    : attendanceState?.type === "CLOCK_OUT"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {attendanceState?.type === "CLOCK_IN"
+                  ? "WORKING"
+                  : attendanceState?.type === "CLOCK_OUT"
+                  ? "COMPLETED"
+                  : "NOT CLOCKED IN"}
+              </span>
+            </div>
+
+            {/* BUTTON */}
+            <Button
+              className="w-full"
+              disabled={attendanceLoading}
+              onClick={async () => {
+                try {
+                  setAttendanceLoading(true);
+
+                  const res = await fetch(
+                    "/api/hris/attendance",
+                    {
+                      method: "POST",
+                    }
+                  );
+
+                  const data = await res.json();
+
+                  if (!res.ok) {
+                    alert(data.error || "Failed");
+                    return;
+                  }
+
+                  setAttendanceState(data);
+
+                  // 🔥 SYNC WITH DATABASE (NEW)
+                  loadTodayAttendance();
+
+                  if (data.type === "CLOCK_IN") {
+                    alert("Clocked IN successfully");
+                  }
+
+                  if (data.type === "CLOCK_OUT") {
+                    alert("Clocked OUT successfully");
+                  }
+                } finally {
+                  setAttendanceLoading(false);
+                }
+              }}
+            >
+              {attendanceLoading
+                ? "Processing..."
+                : "Clock In / Clock Out"}
+            </Button>
+
           </Card>
 
           {/* QUICK ACTIONS */}
@@ -324,7 +400,6 @@ export default function DashboardPage() {
 
         </div>
       </div>
-
     </div>
   );
 }

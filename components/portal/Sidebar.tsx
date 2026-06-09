@@ -33,6 +33,8 @@ export default function Sidebar() {
 
   const [crmOpen, setCrmOpen] = useState(true);
 
+  const [hrisOpen,setHrisOpen] = useState(true);
+
   const isActive = (href: string) => {
     return (
       pathname === href ||
@@ -188,26 +190,128 @@ export default function Sidebar() {
           </div>
         )}
 
-        {/* HRIS */}
         {canManageHR(user) && (
-          <Link
-            href="/portal/hris"
-            className={`
-              flex items-center gap-3
-              rounded-lg px-3 py-2
-              text-sm transition-all
-              ${
-                isActive("/portal/hris")
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted"
-              }
-            `}
-          >
-            <Building2 size={18} />
-            HRIS
-          </Link>
-        )}
+          <div>
+            <button
+              onClick={() => setHrisOpen(!hrisOpen)}
+              className="
+                w-full
+                flex
+                items-center
+                justify-between
+                rounded-lg
+                px-3
+                py-2
+                text-sm
+                transition-all
+                hover:bg-muted
+              "
+            >
+              <div className="flex items-center gap-3">
+                <Building2 size={18} />
+                HRIS
+              </div>
 
+              <ChevronDown
+                size={16}
+                className={`
+                  transition-transform
+                  ${hrisOpen ? "rotate-180" : ""}
+                `}
+              />
+            </button>
+
+            {hrisOpen && (
+              <div className="ml-8 mt-1 space-y-1">
+
+                <Link
+                  href="/portal/hris"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      pathname === "/portal/hris"
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  Dashboard
+                </Link>
+
+                <Link
+                  href="/portal/hris/employees"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      pathname.startsWith("/portal/hris/employees")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  Employee Directory
+                </Link>
+
+                <Link
+                  href="/portal/hris/departments"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      pathname.startsWith("/portal/hris/departments")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  Departments
+                </Link>
+
+                <Link
+                  href="/portal/hris/attendance"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      pathname.startsWith("/portal/hris/attendance")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  Attendance
+                </Link>
+
+                <Link
+                  href="/portal/hris/leave"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      pathname.startsWith("/portal/hris/leave")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  Leave Requests
+                </Link>
+
+
+                <Link
+                  href="/portal/hris/payroll"
+                  className={`
+                    block rounded-lg px-3 py-2 text-sm
+                    ${
+                      pathname.startsWith("/portal/hris/payroll")
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }
+                  `}
+                >
+                  PayRoll
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
         {/* PROJECTS */}
         {canManageProjects(user) && (
           <Link

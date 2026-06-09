@@ -29,6 +29,7 @@
     users       User[]
     departments Department[]
     employees   Employee[]
+    payroll Payroll []
     leads       Lead[]
     contacts    Contact[]
     projects    Project[]
@@ -102,8 +103,42 @@
     employees Employee[]
   }
 
+  model Payroll {
+  id String @id @default(cuid())
+
+  employeeId String
+  companyId  String
+
+  month Int
+  year  Int
+
+  baseSalary Int
+  allowance  Int @default(0)
+  deduction  Int @default(0)
+
+  totalSalary Int
+
+  status String @default("DRAFT") // DRAFT | APPROVED | PAID
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id])
+  company  Company  @relation(fields: [companyId], references: [id])
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  RESIGNED
+  TERMINATED
+  ON_LEAVE
+}
+
+
   model Employee {
     id String @id @default(cuid())
+
+    employeeNumber String @unique
 
     companyId    String
     userId       String  @unique
@@ -111,8 +146,11 @@
 
     jobTitle String?
     hireDate DateTime?
+    phone String?
+    address String?
+    birthDate DateTime?
 
-    status String @default("ACTIVE")
+    status EmployeeStatus @default(ACTIVE)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -125,6 +163,18 @@
 
     leaveRequests LeaveRequest[]
     attendance    Attendance[]
+    payroll Payroll[]
+
+  }
+
+  model EmployeeNumberCounter {
+    id        String @id @default(cuid())
+    companyId String
+    year      Int
+
+    current   Int @default(0)
+
+    @@unique([companyId, year])
   }
 
   model CompanyMember {
@@ -157,16 +207,33 @@
     employee Employee @relation(fields: [employeeId], references: [id])
   }
 
-  model Attendance {
-    id String @id @default(cuid())
+model Attendance {
+  id String @id @default(cuid())
 
-    employeeId String
+  employeeId String
 
-    clockIn  DateTime
-    clockOut DateTime?
+  date DateTime @db.Date
 
-    employee Employee @relation(fields: [employeeId], references: [id])
-  }
+  clockIn DateTime?
+  clockOut DateTime?
+
+  workMinutes Int @default(0)
+
+  lateMinutes Int @default(0)
+
+  overtimeMinutes Int @default(0)
+
+  status String @default("ABSENT")
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  employee Employee @relation(fields:[employeeId], references:[id])
+
+  @@unique([employeeId, date])
+}
 
   model Lead {
     id        String @id @default(cuid())
