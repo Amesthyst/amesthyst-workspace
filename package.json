@@ -6,7 +6,8 @@
     "dev": "cross-env NODE_OPTIONS=--max_old_space_size=4096 next dev",
     "build": "cross-env NODE_OPTIONS=--max_old_space_size=4096 next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
