@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 export async function GET(req: Request) {
   try {
     const user = await validateHRAccess();
@@ -22,34 +25,36 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
 
-    const page = Number(searchParams.get("page") || 1);
-    const limit = Number(searchParams.get("limit") || 20);
+    const page = Number(searchParams.get("page") ?? 1);
+    const limit = Number(searchParams.get("limit") ?? 20);
 
     const skip = (page - 1) * limit;
 
-    const logs = await prisma.auditLog.findMany({
-      where: {
-        companyId: user.companyId,
-      },
-      include: {
-        user: {
-          include: {
-            employee: true,
+    const [logs, total] = await Promise.all([
+      prisma.auditLog.findMany({
+        where: {
+          companyId: user.companyId,
+        },
+        include: {
+          user: {
+            include: {
+              employee: true,
+            },
           },
         },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      skip,
-      take: limit,
-    });
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: limit,
+      }),
 
-    const total = await prisma.auditLog.count({
-      where: {
-        companyId: user.companyId,
-      },
-    });
+      prisma.auditLog.count({
+        where: {
+          companyId: user.companyId,
+        },
+      }),
+    ]);
 
     return NextResponse.json({
       data: logs,
