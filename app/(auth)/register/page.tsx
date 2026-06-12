@@ -20,7 +20,6 @@ export default function RegisterPage() {
     const supabase = createClient();
     setLoading(true);
 
-    // 1. Create auth user
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -32,7 +31,6 @@ export default function RegisterPage() {
       return;
     }
 
-    // 2. Sync to DB with name
     const res = await fetch("/api/auth/sync", {
       method: "POST",
       headers: {

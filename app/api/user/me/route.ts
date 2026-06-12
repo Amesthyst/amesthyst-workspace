@@ -22,7 +22,11 @@ export async function GET() {
     },
     include: {
       role: true,
-      company: true,
+      company: {
+        include: {
+          settings: true,
+        },
+      },
       employee: true,
     },
   });

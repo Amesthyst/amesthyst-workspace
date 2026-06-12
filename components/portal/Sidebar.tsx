@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { t } from "@/lib/i18n/translate";
+import { useLanguage } from "@/lib/i18n/useLanguage";
 
 import {
   LayoutDashboard,
@@ -34,6 +36,8 @@ export default function Sidebar() {
   const [crmOpen, setCrmOpen] = useState(true);
 
   const [hrisOpen,setHrisOpen] = useState(true);
+  
+  const { language } = useLanguage();
 
   const isActive = (href: string) => {
     return (
@@ -43,15 +47,14 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-72 border-r bg-white flex flex-col">
+    <aside className="w-72 border-r bg-sidebar text-sidebar-foreground flex flex-col">
 
       {/* LOGO */}
-      <div className="h-16 border-b flex items-center px-6">
+      <div className=" h-16 border-b border-sidebar-border flex items-center px-6">
         <div>
           <h1 className="font-bold text-lg">
             Amesthyst Workspace
           </h1>
-
           <p className="text-xs text-muted-foreground">
             Enterprise Platform
           </p>
@@ -76,7 +79,7 @@ export default function Sidebar() {
           `}
         >
           <LayoutDashboard size={18} />
-          Dashboard
+          {t(language, "dashboard")}
         </Link>
 
         {/* CRM */}
@@ -328,7 +331,7 @@ export default function Sidebar() {
             `}
           >
             <Briefcase size={18} />
-            Projects
+            {t(language, "projects")}
           </Link>
         )}
 
@@ -348,14 +351,14 @@ export default function Sidebar() {
             `}
           >
             <Settings size={18} />
-            Settings
+            {t(language, "settings")}
           </Link>
         )}
 
       </nav>
 
       {/* FOOTER */}
-      <div className="border-t p-4 space-y-3">
+      <div className="border-t border-sidebar-border p-4 space-y-3">
 
         <div>
           <p className="font-medium text-sm">
@@ -373,7 +376,7 @@ export default function Sidebar() {
           onClick={logout}
         >
           <LogOut className="mr-2 h-4 w-4" />
-          Logout
+          {t(language, "logout")}
         </Button>
 
       </div>

@@ -37,6 +37,9 @@ export async function GET(
         orderBy: { startDate: "desc" },
       },
       payroll: {
+        where: {
+          status: "PAID",
+        },
         orderBy: { createdAt: "desc" },
       },
     },

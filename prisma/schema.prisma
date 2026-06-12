@@ -35,6 +35,7 @@
     projects    Project[]
     settings    CompanySettings?
     auditLogs   AuditLog[]
+    notification Notification[]
 
     members CompanyMember[]
   }
@@ -85,10 +86,10 @@
     employee Employee?
 
     taskComments  TaskComment[]
-    notifications Notification[]
     auditLogs     AuditLog[]
 
     memberships CompanyMember[]
+    userpreference UserPreference[]
   }
 
   model Department {
@@ -164,6 +165,12 @@ enum EmployeeStatus {
     leaveRequests LeaveRequest[]
     attendance    Attendance[]
     payroll Payroll[]
+    task Task[]
+    projectactivity ProjectActivity[]
+    projectfile ProjectFile[]
+    notification Notification[]
+    taskactivity TaskActivity[]
+    taskfile TaskFile[]
 
   }
 
@@ -203,6 +210,9 @@ enum EmployeeStatus {
     reason String
 
     status String @default("PENDING")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())@updatedAt
 
     employee Employee @relation(fields: [employeeId], references: [id])
   }
@@ -300,43 +310,122 @@ model Attendance {
     lead Lead @relation(fields: [leadId], references: [id])
   }
 
-  model Project {
-    id String @id @default(cuid())
+model Project {
+  id String @id @default(cuid())
 
-    companyId String
+  companyId String
 
-    name        String
-    description String?
+  name String
+  description String?
 
-    status String
+  status String
 
-    startDate DateTime?
-    endDate   DateTime?
+  startDate DateTime?
+  endDate DateTime?
 
-    company Company @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    tasks Task[]
-  }
+  company Company @relation(fields: [companyId], references: [id])
 
-  model Task {
-    id String @id @default(cuid())
+  tasks Task[]
+  activities ProjectActivity[]
+  projectfile ProjectFile[]
+}
 
-    projectId  String
-    assigneeId String?
+model ProjectActivity {
+  id String @id @default(cuid())
 
-    title       String
-    description String?
+  projectId String
 
-    status String
+  employeeId String
 
-    priority String?
+  action String
 
-    dueDate DateTime?
+  createdAt DateTime @default(now())
 
-    project Project @relation(fields: [projectId], references: [id])
+  project Project @relation(fields:[projectId],references:[id], onDelete: Cascade)
 
-    comments TaskComment[]
-  }
+  employee Employee @relation(fields:[employeeId],references:[id])
+}
+
+model ProjectFile {
+  id String @id @default(cuid())
+
+  projectId String
+
+  uploadedByEmployeeId String
+
+  fileName String
+  fileUrl String
+
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields:[projectId],references:[id], onDelete: Cascade)
+
+  employee Employee @relation(fields:[uploadedByEmployeeId],references:[id])
+}
+
+model Task {
+  id String @id @default(cuid())
+
+  projectId String
+
+  assigneeId String?
+
+  title String
+  description String?
+
+  status String @default("TODO")
+
+  priority String @default("MEDIUM")
+
+  dueDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId],references: [id], onDelete: Cascade)
+
+  assignee Employee? @relation(fields: [assigneeId],references: [id])
+
+  comments TaskComment[]
+  taskactivity TaskActivity[]
+  taskfile TaskFile[]
+}
+
+model TaskActivity {
+  id String @id @default(cuid())
+
+  taskId String
+  employeeId String
+  
+  metadata   Json?
+
+  action String
+  message String?
+
+  createdAt DateTime @default(now())
+
+  task     Task @relation(fields: [taskId], references: [id])
+  employee Employee @relation(fields: [employeeId], references: [id])
+}
+
+model TaskFile {
+  id String @id @default(cuid())
+
+  taskId String
+  uploadedBy String
+
+  fileName String
+  fileUrl String
+  fileType String?
+
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id])
+  employee Employee @relation(fields: [uploadedBy], references: [id])
+}
 
   model TaskComment {
     id String @id @default(cuid())
@@ -353,20 +442,22 @@ model Attendance {
     user User @relation(fields: [userId], references: [id])
   }
 
-  model Notification {
-    id String @id @default(cuid())
+model Notification {
+  id String @id @default(cuid())
 
-    userId String
+  employeeId String
+  companyId String
 
-    title   String
-    message String
+  title String
+  message String
 
-    isRead Boolean @default(false)
+  isRead Boolean @default(false)
 
-    createdAt DateTime @default(now())
+  createdAt DateTime @default(now())
 
-    user User @relation(fields: [userId], references: [id])
-  }
+  employee Employee @relation(fields:[employeeId],references:[id])
+  company Company @relation(fields: [companyId],references: [id])
+}
 
   model AuditLog {
     id String @id @default(cuid())
@@ -384,6 +475,27 @@ model Attendance {
 
     user User @relation(fields: [userId], references: [id])
   }
+
+model UserPreference {
+  id String @id @default(cuid())
+
+  userId String @unique
+
+  displayName String?
+  avatarUrl String?
+  jobTitle String?
+  bio String?
+
+  theme String @default("light") // light | dark | system
+  density String @default("comfortable") // compact | comfortable
+  language String @default("en") // en | id
+  timeFormat String @default("24h") // 12h | 24h
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
 
   model CompanySettings {
     id String @id @default(cuid())

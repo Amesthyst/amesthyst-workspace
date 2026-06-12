@@ -56,27 +56,16 @@ export default function EmployeeProfilePage({
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
 
-  // -----------------------------
-  // EXPANDED FORM (FULL CONTROL)
-  // -----------------------------
+  // EMPLOYEE FORM ONLY
   const [form, setForm] = useState({
-    // BASIC
     name: "",
     jobTitle: "",
     phone: "",
     address: "",
     employeeNumber: "",
     status: "ACTIVE",
-
-    // EMPLOYMENT
     hireDate: "",
     birthDate: "",
-
-    // PAYROLL (latest only)
-    payrollSalary: "",
-    payrollStatus: "",
-    payrollMonth: "",
-    payrollYear: "",
   });
 
   async function load() {
@@ -93,30 +82,15 @@ export default function EmployeeProfilePage({
 
       setData(json);
 
-      const latestPayroll = json.payroll?.[0];
-
       setForm({
-        // BASIC
         name: json.user?.name ?? "",
         jobTitle: json.jobTitle ?? "",
         phone: json.phone ?? "",
         address: json.address ?? "",
         employeeNumber: json.employeeNumber ?? "",
-        status: json.status ?? "", 
-
-        // EMPLOYMENT
-        hireDate: json.hireDate
-          ? json.hireDate.split("T")[0]
-          : "",
-        birthDate: json.birthDate
-          ? json.birthDate.split("T")[0]
-          : "",
-
-        // PAYROLL
-        payrollSalary: latestPayroll?.totalSalary?.toString() ?? "",
-        payrollStatus: latestPayroll?.status ?? "",
-        payrollMonth: latestPayroll?.month?.toString() ?? "",
-        payrollYear: latestPayroll?.year?.toString() ?? "",
+        status: json.status ?? "ACTIVE",
+        hireDate: json.hireDate ? json.hireDate.split("T")[0] : "",
+        birthDate: json.birthDate ? json.birthDate.split("T")[0] : "",
       });
     } finally {
       setLoading(false);
@@ -132,26 +106,14 @@ export default function EmployeeProfilePage({
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        // BASIC
         name: form.name,
         jobTitle: form.jobTitle,
         phone: form.phone,
         address: form.address,
         employeeNumber: form.employeeNumber,
-
-        // EMPLOYMENT
+        status: form.status,
         hireDate: form.hireDate,
         birthDate: form.birthDate,
-
-        // PAYROLL (latest only)
-        payroll: {
-          totalSalary: Number(form.payrollSalary),
-          status: form.payrollStatus,
-          month: Number(form.payrollMonth),
-          year: Number(form.payrollYear),
-        },
-
-        status: form.status,
       }),
     });
 
@@ -161,7 +123,7 @@ export default function EmployeeProfilePage({
     }
 
     setEditing(false);
-    load();
+    await load();
   }
 
   if (loading) {
@@ -172,15 +134,18 @@ export default function EmployeeProfilePage({
     return <Card className="p-6">Employee not found</Card>;
   }
 
+  // Get latest payroll (READ ONLY)
+  const latestPayroll = data.payroll?.sort(
+    (a, b) => b.year - a.year || b.month - a.month
+  )[0];
+
   return (
     <div className="space-y-6">
 
       {/* HEADER */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">
-            Employee Profile
-          </h1>
+          <h1 className="text-3xl font-bold">Employee Profile</h1>
           <p className="text-muted-foreground">
             Full HRIS record overview
           </p>
@@ -195,19 +160,14 @@ export default function EmployeeProfilePage({
         </Button>
       </div>
 
-      {/* BASIC INFO */}
+      {/* EMPLOYEE INFO */}
       <Card className="p-6 space-y-4">
         <div>
-          <h2 className="text-xl font-bold">
-            {data.user.name}
-          </h2>
-          <p className="text-muted-foreground">
-            {data.user.email}
-          </p>
+          <h2 className="text-xl font-bold">{data.user.name}</h2>
+          <p className="text-muted-foreground">{data.user.email}</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
-
           <Input
             disabled={!editing}
             value={form.employeeNumber}
@@ -245,39 +205,19 @@ export default function EmployeeProfilePage({
           />
         </div>
 
-        <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Employment Status
-        </label>
-
         <select
           disabled={!editing}
           value={form.status}
           onChange={(e) =>
-            setForm({
-              ...form,
-              status: e.target.value,
-            })
+            setForm({ ...form, status: e.target.value })
           }
-          className="w-full h-10 rounded-md border bg-background px-3 text-sm"
+          className="w-full h-10 rounded-md border px-3 text-sm"
         >
-          <option value="ACTIVE">
-            ACTIVE
-          </option>
-
-          <option value="ON_LEAVE">
-            ON LEAVE
-          </option>
-
-          <option value="RESIGNED">
-            RESIGNED
-          </option>
-
-          <option value="TERMINATED">
-            TERMINATED
-          </option>
+          <option value="ACTIVE">ACTIVE</option>
+          <option value="ON_LEAVE">ON LEAVE</option>
+          <option value="RESIGNED">RESIGNED</option>
+          <option value="TERMINATED">TERMINATED</option>
         </select>
-      </div>
       </Card>
 
       {/* EMPLOYMENT */}
@@ -307,54 +247,26 @@ export default function EmployeeProfilePage({
         </p>
       </Card>
 
-      {/* PAYROLL (LATEST EDITABLE) */}
-      <Card className="p-6 space-y-4">
+      {/* PAYROLL (READ ONLY FIXED) */}
+      <Card className="p-6 space-y-3">
         <h3 className="font-semibold">Payroll (Latest)</h3>
 
-        <Input
-          disabled={!editing}
-          value={form.payrollSalary}
-          onChange={(e) =>
-            setForm({ ...form, payrollSalary: e.target.value })
-          }
-          placeholder="Total Salary"
-        />
-
-        <Input
-          disabled={!editing}
-          value={form.payrollStatus}
-          onChange={(e) =>
-            setForm({ ...form, payrollStatus: e.target.value })
-          }
-          placeholder="Status"
-        />
-
-        <div className="grid grid-cols-2 gap-2">
-          <Input
-            disabled={!editing}
-            value={form.payrollMonth}
-            onChange={(e) =>
-              setForm({ ...form, payrollMonth: e.target.value })
-            }
-            placeholder="Month"
-          />
-
-          <Input
-            disabled={!editing}
-            value={form.payrollYear}
-            onChange={(e) =>
-              setForm({ ...form, payrollYear: e.target.value })
-            }
-            placeholder="Year"
-          />
-        </div>
+        {!latestPayroll ? (
+          <p className="text-muted-foreground">
+            No payroll data available
+          </p>
+        ) : (
+          <div className="space-y-2 text-sm">
+            <p>Status: <b>{latestPayroll.status}</b></p>
+            <p>Period: {latestPayroll.month}/{latestPayroll.year}</p>
+            <p>Total Salary: <b>{latestPayroll.totalSalary}</b></p>
+          </div>
+        )}
       </Card>
 
-      {/* ATTENDANCE (UNCHANGED) */}
+      {/* ATTENDANCE */}
       <Card className="p-6">
-        <h3 className="font-semibold mb-4">
-          Attendance Overview
-        </h3>
+        <h3 className="font-semibold mb-4">Attendance Overview</h3>
 
         {Object.entries(
           data.attendance.reduce((acc: any, a) => {
@@ -363,24 +275,20 @@ export default function EmployeeProfilePage({
             acc[date].push(a);
             return acc;
           }, {})
-        ).map(([date, records]: any) => {
-          const dayRecords = records as typeof data.attendance;
+        ).map(([date, records]: any) => (
+          <div key={date} className="border rounded p-4 mb-3">
+            <p className="font-medium">{date}</p>
 
-          return (
-            <div key={date} className="border rounded p-4 mb-3">
-              <p className="font-medium">{date}</p>
-
-              {dayRecords.map((a) => (
-                <div key={a.id} className="text-sm text-muted-foreground">
-                  IN: {new Date(a.clockIn).toLocaleTimeString()} | OUT:{" "}
-                  {a.clockOut
-                    ? new Date(a.clockOut).toLocaleTimeString()
-                    : "—"}
-                </div>
-              ))}
-            </div>
-          );
-        })}
+            {records.map((a: any) => (
+              <div key={a.id} className="text-sm text-muted-foreground">
+                IN: {new Date(a.clockIn).toLocaleTimeString()} | OUT:{" "}
+                {a.clockOut
+                  ? new Date(a.clockOut).toLocaleTimeString()
+                  : "—"}
+              </div>
+            ))}
+          </div>
+        ))}
       </Card>
 
       {/* LEAVE */}

@@ -2,19 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/context/AuthContext";
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type Payroll = {
   id: string;
   month: number;
   year: number;
+
   baseSalary: number;
   allowance: number;
   deduction: number;
   totalSalary: number;
-  status: string;
+
+  status: "DRAFT" | "APPROVED" | "PAID" | "REJECT";
 
   employee: {
     user: {
@@ -26,21 +28,90 @@ type Payroll = {
 
 export default function PayrollPage() {
   const { user } = useAuth();
+
   const [data, setData] = useState<Payroll[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [form, setForm] = useState({
+    employeeId: "",
+    baseSalary: "",
+    allowance: "",
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+  });
 
   async function load() {
     if (!user?.companyId) return;
+
+    setLoading(true);
 
     const res = await fetch(
       `/api/hris/payroll?companyId=${user.companyId}`
     );
 
     setData(await res.json());
+    setLoading(false);
   }
 
   useEffect(() => {
     load();
   }, [user]);
+
+  // ADD PAYROLL
+  async function addPayroll() {
+    await fetch("/api/hris/payroll", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...form,
+        companyId: user?.companyId,
+      }),
+    });
+
+    setForm({
+      employeeId: "",
+      baseSalary: "",
+      allowance: "",
+      month: new Date().getMonth() + 1,
+      year: new Date().getFullYear(),
+    });
+
+    load();
+  }
+
+  // UPDATE PAYROLL FIELD
+  async function updatePayroll(id: string, payload: any) {
+    await fetch(`/api/hris/payroll/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    load();
+  }
+
+  const totalPayroll = data
+    .filter((p) => p.status === "PAID")
+    .reduce(
+      (sum, p) =>
+        sum + (p.baseSalary + p.allowance - p.deduction),
+      0
+    );
+
+  const StatusBadge = ({ status }: any) => {
+    const map: any = {
+      DRAFT: "bg-yellow-100 text-yellow-700",
+      APPROVED: "bg-blue-100 text-blue-700",
+      PAID: "bg-green-100 text-green-700",
+      REJECT: "bg-red-100 text-red-700",
+    };
+
+    return (
+      <span className={`px-2 py-1 text-xs rounded ${map[status]}`}>
+        {status}
+      </span>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -49,72 +120,155 @@ export default function PayrollPage() {
       <div>
         <h1 className="text-3xl font-bold">Payroll System</h1>
         <p className="text-muted-foreground">
-          Salary management & payout tracking
+          Manage salary, approval, and payment status
         </p>
       </div>
 
+      {/* ADD PAYROLL */}
+      <Card className="p-4 space-y-3">
+        <h2 className="font-bold">Add Payroll</h2>
+
+        <div className="grid grid-cols-3 gap-2">
+
+          <Input
+            placeholder="Employee ID"
+            value={form.employeeId}
+            onChange={(e) =>
+              setForm({ ...form, employeeId: e.target.value })
+            }
+          />
+
+          <Input
+            type="number"
+            placeholder="Base Salary"
+            value={form.baseSalary}
+            onChange={(e) =>
+              setForm({ ...form, baseSalary: e.target.value })
+            }
+          />
+
+          <Input
+            type="number"
+            placeholder="Allowance"
+            value={form.allowance}
+            onChange={(e) =>
+              setForm({ ...form, allowance: e.target.value })
+            }
+          />
+
+        </div>
+
+        <Button onClick={addPayroll}>
+          Create Payroll
+        </Button>
+      </Card>
+
+      {/* SUMMARY */}
+      <Card className="p-4">
+        <h2 className="font-bold">Total Paid Payroll</h2>
+        <p className="text-green-600 font-bold text-lg">
+          {totalPayroll}
+        </p>
+      </Card>
+
+      {/* TABLE HEADER */}
+      <Card className="p-3 font-bold">
+        <div className="grid grid-cols-6 text-sm">
+          <span>Employee</span>
+          <span>Base</span>
+          <span>Allowance</span>
+          <span>Deduction</span>
+          <span>Total</span>
+          <span>Status / Action</span>
+        </div>
+      </Card>
+
       {/* LIST */}
-      <div className="grid gap-4">
+      <div className="space-y-3">
 
         {data.map((p) => (
-          <Card key={p.id} className="p-5 space-y-3">
+          <Card key={p.id} className="p-3">
 
-            {/* EMPLOYEE */}
-            <div>
-              <h3 className="font-semibold">
+            <div className="grid grid-cols-6 items-center gap-2 text-sm">
+
+              {/* EMPLOYEE */}
+              <span className="font-medium">
                 {p.employee.user.name}
-              </h3>
-
-              <p className="text-sm text-muted-foreground">
-                {p.employee.user.email}
-              </p>
-            </div>
-
-            {/* SALARY INFO */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-
-              <div>
-                <p className="text-muted-foreground">Base</p>
-                <p className="font-medium">{p.baseSalary}</p>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground">Allowance</p>
-                <p className="font-medium">{p.allowance}</p>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground">Deduction</p>
-                <p className="font-medium text-red-500">
-                  {p.deduction}
-                </p>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground">Total</p>
-                <p className="font-bold text-green-600">
-                  {p.totalSalary}
-                </p>
-              </div>
-
-            </div>
-
-            {/* STATUS */}
-            <div className="flex justify-between items-center">
-
-              <span className="text-xs px-3 py-1 rounded bg-gray-100">
-                {p.status}
               </span>
 
-              <div className="flex gap-2">
+              {/* BASE */}
+              <Input
+                value={p.baseSalary}
+                onChange={(e) =>
+                  updatePayroll(p.id, {
+                    baseSalary: +e.target.value,
+                  })
+                }
+              />
 
-                <Button size="sm" variant="outline">
-                  Approve
-                </Button>
+              {/* ALLOWANCE */}
+              <Input
+                value={p.allowance}
+                onChange={(e) =>
+                  updatePayroll(p.id, {
+                    allowance: +e.target.value,
+                  })
+                }
+              />
 
-                <Button size="sm">
-                  Mark as Paid
-                </Button>
+              {/* DEDUCTION */}
+              <Input
+                value={p.deduction}
+                onChange={(e) =>
+                  updatePayroll(p.id, {
+                    deduction: +e.target.value,
+                  })
+                }
+              />
+
+              {/* TOTAL */}
+              <span className="font-bold text-green-600">
+                {p.baseSalary + p.allowance - p.deduction}
+              </span>
+
+              {/* STATUS + ACTION */}
+              <div className="flex gap-2 items-center">
+
+              <StatusBadge status={p.status} />
+
+              {/* APPROVE */}
+              <Button
+                size="sm"
+                disabled={p.status !== "DRAFT"}
+                onClick={() =>
+                  updatePayroll(p.id, { status: "APPROVED" })
+                }
+              >
+                Approve
+              </Button>
+
+              {/* REJECT */}
+              <Button
+                size="sm"
+                variant="destructive"
+                disabled={p.status !== "DRAFT"}
+                onClick={() =>
+                  updatePayroll(p.id, { status: "REJECT" })
+                }
+              >
+                Reject
+              </Button>
+
+              {/* PAID */}
+              <Button
+                size="sm"
+                disabled={p.status !== "APPROVED"}
+                onClick={() =>
+                  updatePayroll(p.id, { status: "PAID" })
+                }
+              >
+                Pay
+              </Button>
 
               </div>
 

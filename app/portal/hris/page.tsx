@@ -46,8 +46,6 @@ export default function HRISDashboardV2() {
 
   return (
     <div className="space-y-6">
-
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">HRIS Command Center</h1>
         <p className="text-muted-foreground">
@@ -55,7 +53,6 @@ export default function HRISDashboardV2() {
         </p>
       </div>
 
-      {/* KPI GRID */}
       <div className="grid gap-4 md:grid-cols-4">
 
         <Card className="p-5">
@@ -84,7 +81,6 @@ export default function HRISDashboardV2() {
 
       </div>
 
-      {/* INSIGHTS */}
       <div className="grid gap-4 md:grid-cols-2">
 
         <Card className="p-5">

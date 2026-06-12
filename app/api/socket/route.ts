@@ -1,0 +1,6 @@
+import { NextResponse } from "next/server";
+import { initSocket } from "@/lib/socket";
+
+export async function GET() {
+  return NextResponse.json({ ok: true });
+}

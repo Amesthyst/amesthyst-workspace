@@ -2,18 +2,22 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
-export async function GET(req: Request) {
+export async function GET() {
   const authUser = await validateHRAccess();
 
   if (!authUser) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return NextResponse.json(
+      { error: "Forbidden" },
+      { status: 403 }
+    );
   }
 
-  const { searchParams } = new URL(req.url);
-  const companyId = searchParams.get("companyId");
-
+  const companyId = authUser.companyId;
   if (!companyId) {
-    return NextResponse.json([]);
+    return NextResponse.json(
+      { error: "Company not found" },
+      { status: 400 }
+    );
   }
 
   const leaves = await prisma.leaveRequest.findMany({
