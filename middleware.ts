@@ -36,12 +36,10 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/portal") ||
     pathname.startsWith("/onboarding");
 
-  // 🔒 No user → redirect to login
   if (!user && isProtected) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // 🔓 Logged in user → block auth pages
   if (user && isAuthPage) {
     return NextResponse.redirect(new URL("/portal/dashboard", request.url));
   }

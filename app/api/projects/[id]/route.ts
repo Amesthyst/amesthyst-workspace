@@ -2,10 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
-/* ==================================================
-   GET PROJECT
-================================================== */
-
 export async function GET(
   req: Request,
   {
@@ -132,10 +128,6 @@ export async function GET(
   }
 }
 
-/* ==================================================
-   PATCH PROJECT
-================================================== */
-
 export async function PATCH(
   req: Request,
   {
@@ -225,10 +217,6 @@ export async function PATCH(
         },
       });
 
-    /* ==========================
-       AUDIT LOG
-    ========================== */
-
     if (
       user.companyId &&
       user.id
@@ -276,9 +264,6 @@ export async function PATCH(
   }
 }
 
-/* ==================================================
-   DELETE PROJECT
-================================================== */
 
 export async function DELETE(
   req: Request,
@@ -327,11 +312,6 @@ export async function DELETE(
         }
       );
     }
-
-    /* =====================================
-       DELETE CHILD DATA FIRST
-       (Required by current schema)
-    ===================================== */
 
     const tasks =
       await prisma.task.findMany({
@@ -414,11 +394,7 @@ export async function DELETE(
         id,
       },
     });
-
-    /* ==========================
-       AUDIT LOG
-    ========================== */
-
+    
     if (
       user.companyId &&
       user.id

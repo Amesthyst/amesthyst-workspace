@@ -60,7 +60,6 @@ export function AuthProvider({
   useEffect(() => {
     loadUser();
 
-    // 🔥 IMPORTANT: listen auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {

@@ -179,8 +179,6 @@ export default function DepartmentDetailPage({
 
   return (
     <div className="space-y-6">
-
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">
           {data.name}
@@ -192,7 +190,6 @@ export default function DepartmentDetailPage({
         </p>
       </div>
 
-      {/* KPI */}
       <div className="grid md:grid-cols-4 gap-4">
 
         <Card className="p-5">
@@ -238,7 +235,6 @@ export default function DepartmentDetailPage({
 
       </div>
 
-      {/* EMPLOYEE TABLE */}
       <Card className="p-6">
 
         <div className="flex justify-between items-center mb-4">
@@ -374,7 +370,6 @@ export default function DepartmentDetailPage({
 
       </Card>
 
-      {/* ASSIGN / TRANSFER */}
       {showAssign && (
 
         <Card className="p-6">

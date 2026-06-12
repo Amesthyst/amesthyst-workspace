@@ -12,7 +12,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // 1. Get lead
   const lead = await prisma.lead.findUnique({
     where: { id: leadId },
   });
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // 2. ALWAYS create contact (NO duplicate check)
   const contact = await prisma.contact.create({
     data: {
       companyId: lead.companyId,
@@ -34,7 +32,6 @@ export async function POST(req: Request) {
     },
   });
 
-  // 3. Link lead → contact
   await prisma.lead.update({
     where: { id: leadId },
     data: {

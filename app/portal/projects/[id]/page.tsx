@@ -6,9 +6,6 @@ import { useParams } from "next/navigation";
 import KanbanBoard from "./components/KanbanBoard";
 import TaskDetailPanel from "./components/TaskDetailPanel";
 
-/* =========================
-   TYPES
-========================= */
 
 type TaskStatus =
   | "TODO"
@@ -52,9 +49,6 @@ type Project = {
   tasks: Task[];
 };
 
-/* =========================
-   PROGRESS
-========================= */
 
 function calculateProgress(
   tasks: Task[]
@@ -69,10 +63,6 @@ function calculateProgress(
     (doneTasks / tasks.length) * 100
   );
 }
-
-/* =========================
-   PAGE
-========================= */
 
 export default function ProjectPage() {
   const params = useParams<{
@@ -105,7 +95,6 @@ export default function ProjectPage() {
       
         const tempId = `temp-${Date.now()}`;
       
-        // optimistic update
         setProject({
           ...project,
           tasks: [
@@ -142,10 +131,6 @@ export default function ProjectPage() {
           await loadProject(true);
         }
       }
-
-  /* =========================
-     LOAD PROJECT
-  ========================= */
 
   async function loadProject(
     silent = false
@@ -192,10 +177,6 @@ export default function ProjectPage() {
     loadProject();
   }, [projectId]);
 
-  /* =========================
-     SELECTED TASK
-  ========================= */
-
   const selectedTask = useMemo(() => {
     if (!project) return null;
 
@@ -207,9 +188,6 @@ export default function ProjectPage() {
     );
   }, [project, selectedTaskId]);
 
-  /* =========================
-     MOVE TASK
-  ========================= */
 
   async function moveTask(
     taskId: string,
@@ -218,8 +196,6 @@ export default function ProjectPage() {
     if (!project) return;
 
     const previousProject = project;
-
-    /* Optimistic UI */
 
     setProject({
       ...project,
@@ -266,10 +242,6 @@ export default function ProjectPage() {
       );
     }
   }
-
-  /* =========================
-     QUICK UPDATE
-  ========================= */
 
   async function quickUpdate(
     taskId: string,
@@ -323,17 +295,9 @@ export default function ProjectPage() {
     }
   }
 
-  /* =========================
-     REFRESH
-  ========================= */
-
   async function refreshProject() {
     await loadProject(true);
   }
-
-  /* =========================
-     STATES
-  ========================= */
 
   if (loading) {
     return (
@@ -380,10 +344,6 @@ export default function ProjectPage() {
 
   return (
     <div className="grid grid-cols-12 gap-4 p-4 min-h-screen bg-gray-50">
-
-      {/* ======================
-          LEFT PANEL
-      ====================== */}
 
       <div className="col-span-3">
 
@@ -490,10 +450,6 @@ export default function ProjectPage() {
 
       </div>
 
-      {/* ======================
-          CENTER PANEL
-      ====================== */}
-
       <div className="col-span-6">
 
       <KanbanBoard
@@ -507,10 +463,6 @@ export default function ProjectPage() {
         />
 
       </div>
-
-      {/* ======================
-          RIGHT PANEL
-      ====================== */}
 
       <div className="col-span-3">
 

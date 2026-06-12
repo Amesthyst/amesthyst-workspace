@@ -28,14 +28,13 @@ export async function POST(req: Request) {
       data: {
         id: user.id,
         email: user.email ?? "",
-        name: name || user.email?.split("@")[0], // fallback
+        name: name || user.email?.split("@")[0],
         companyId: null,
         roleId: null,
         isActive: true,
       },
     });
   } else {
-    // optional: update name if missing
     if (!existingUser.name && name) {
       await prisma.user.update({
         where: { id: user.id },

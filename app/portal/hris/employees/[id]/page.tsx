@@ -56,7 +56,6 @@ export default function EmployeeProfilePage({
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
 
-  // EMPLOYEE FORM ONLY
   const [form, setForm] = useState({
     name: "",
     jobTitle: "",
@@ -134,7 +133,6 @@ export default function EmployeeProfilePage({
     return <Card className="p-6">Employee not found</Card>;
   }
 
-  // Get latest payroll (READ ONLY)
   const latestPayroll = data.payroll?.sort(
     (a, b) => b.year - a.year || b.month - a.month
   )[0];
@@ -142,7 +140,6 @@ export default function EmployeeProfilePage({
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Employee Profile</h1>
@@ -160,7 +157,6 @@ export default function EmployeeProfilePage({
         </Button>
       </div>
 
-      {/* EMPLOYEE INFO */}
       <Card className="p-6 space-y-4">
         <div>
           <h2 className="text-xl font-bold">{data.user.name}</h2>
@@ -220,7 +216,6 @@ export default function EmployeeProfilePage({
         </select>
       </Card>
 
-      {/* EMPLOYMENT */}
       <Card className="p-6 space-y-4">
         <h3 className="font-semibold">Employment Info</h3>
 
@@ -247,7 +242,6 @@ export default function EmployeeProfilePage({
         </p>
       </Card>
 
-      {/* PAYROLL (READ ONLY FIXED) */}
       <Card className="p-6 space-y-3">
         <h3 className="font-semibold">Payroll (Latest)</h3>
 
@@ -264,7 +258,6 @@ export default function EmployeeProfilePage({
         )}
       </Card>
 
-      {/* ATTENDANCE */}
       <Card className="p-6">
         <h3 className="font-semibold mb-4">Attendance Overview</h3>
 
@@ -291,7 +284,6 @@ export default function EmployeeProfilePage({
         ))}
       </Card>
 
-      {/* LEAVE */}
       <Card className="p-6">
         <h3 className="font-semibold mb-4">Leave Requests</h3>
 

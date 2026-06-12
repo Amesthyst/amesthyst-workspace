@@ -11,11 +11,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 
-/* ---------------- FORM CONTEXT ---------------- */
-
 const Form = FormProvider;
 
-/* ---------------- FORM FIELD ---------------- */
 
 type FormFieldContextValue = {
   name: string;
@@ -33,7 +30,6 @@ const FormField = ({ ...props }: any) => {
   );
 };
 
-/* ---------------- USE FIELD ---------------- */
 
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext);
@@ -48,8 +44,6 @@ const useFormField = () => {
     ...fieldState,
   };
 };
-
-/* ---------------- FORM ITEM ---------------- */
 
 type FormItemContextValue = {
   id: string;
@@ -73,8 +67,6 @@ const FormItem = React.forwardRef<
 });
 FormItem.displayName = "FormItem";
 
-/* ---------------- LABEL ---------------- */
-
 const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
@@ -92,8 +84,6 @@ const FormLabel = React.forwardRef<
 });
 FormLabel.displayName = "FormLabel";
 
-/* ---------------- CONTROL ---------------- */
-
 const FormControl = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -102,8 +92,6 @@ const FormControl = React.forwardRef<
 });
 FormControl.displayName = "FormControl";
 
-/* ---------------- MESSAGE ---------------- */
-
 const FormMessage = () => {
   const { error } = useFormField();
 
@@ -111,8 +99,6 @@ const FormMessage = () => {
 
   return <p className="text-sm text-red-500">{error.message}</p>;
 };
-
-/* ---------------- EXPORT ---------------- */
 
 export {
   Form,

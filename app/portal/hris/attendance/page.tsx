@@ -85,7 +85,6 @@ export default function AttendancePage() {
           {data.map((a) => (
             <Card key={a.id} className="p-5 space-y-3">
 
-              {/* HEADER */}
               <div className="flex justify-between items-start">
 
                 <div>
@@ -102,7 +101,6 @@ export default function AttendancePage() {
                 </Badge>
               </div>
 
-              {/* TIME */}
               <div className="grid md:grid-cols-2 gap-2 text-sm">
                 <p>
                   🟢 IN:{" "}
@@ -119,7 +117,6 @@ export default function AttendancePage() {
                 </p>
               </div>
 
-              {/* STATS */}
               <div className="grid grid-cols-3 text-xs text-muted-foreground pt-2 border-t">
                 <p>Work: {a.workMinutes} min</p>
                 <p>Late: {a.lateMinutes} min</p>

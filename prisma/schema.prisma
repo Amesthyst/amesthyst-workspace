@@ -119,7 +119,7 @@
 
   totalSalary Int
 
-  status String @default("DRAFT") // DRAFT | APPROVED | PAID
+  status String @default("DRAFT")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -263,7 +263,7 @@ model Attendance {
     updatedAt DateTime @updatedAt
 
     company   Company @relation(fields: [companyId], references: [id])
-    contact   Contact? @relation(fields: [contactId], references: [id]) // 👈 ADD
+    contact   Contact? @relation(fields: [contactId], references: [id])
 
     activities Activity[]
     notes      Note[]
@@ -486,10 +486,10 @@ model UserPreference {
   jobTitle String?
   bio String?
 
-  theme String @default("light") // light | dark | system
-  density String @default("comfortable") // compact | comfortable
-  language String @default("en") // en | id
-  timeFormat String @default("24h") // 12h | 24h
+  theme String @default("light") 
+  density String @default("comfortable") 
+  language String @default("en") 
+  timeFormat String @default("24h")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

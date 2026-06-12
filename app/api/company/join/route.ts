@@ -1,6 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+function generateEmployeeNumber() {
+  return `EMP-${Date.now()}-${Math.floor(
+    Math.random() * 1000
+  )}`;
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -53,6 +59,7 @@ export async function POST(req: Request) {
     if (!existingEmployee) {
       await prisma.employee.create({
         data: {
+          employeeNumber: generateEmployeeNumber(),
           companyId: company.id,
           userId,
           jobTitle: "Employee",

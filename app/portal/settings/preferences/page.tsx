@@ -158,7 +158,6 @@ export default function PreferencesPage() {
         </p>
       </div>
 
-      {/* PROFILE */}
 
       <Card className="p-6 space-y-4">
 
@@ -225,7 +224,6 @@ export default function PreferencesPage() {
 
       </Card>
 
-      {/* APPEARANCE */}
 
       <Card className="p-6 space-y-4">
 
@@ -237,7 +235,6 @@ export default function PreferencesPage() {
           )}
         </h2>
 
-        {/* THEME */}
 
         <div>
           <label className="block mb-2 text-sm font-medium">
@@ -274,7 +271,6 @@ export default function PreferencesPage() {
           </select>
         </div>
 
-        {/* DENSITY */}
 
         <div>
           <label className="block mb-2 text-sm font-medium">
@@ -311,8 +307,6 @@ export default function PreferencesPage() {
             </option>
           </select>
         </div>
-
-        {/* LANGUAGE */}
 
         <div>
           <label className="block mb-2 text-sm font-medium">
@@ -353,7 +347,6 @@ export default function PreferencesPage() {
           </select>
         </div>
 
-        {/* TIME FORMAT */}
 
         <div>
           <label className="block mb-2 text-sm font-medium">

@@ -2,9 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
-/* =========================
-   CREATE TASK (FIXED)
-========================= */
 
 export async function POST(req: Request) {
   try {
@@ -19,10 +16,6 @@ export async function POST(req: Request) {
 
     const body = await req.json();
 
-    /* =========================
-       VALIDATION
-    ========================= */
-
     if (!body.projectId) {
       return NextResponse.json(
         { error: "projectId is required" },
@@ -36,10 +29,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    /* =========================
-       CHECK PROJECT OWNERSHIP
-    ========================= */
 
     const project = await prisma.project.findUnique({
       where: { id: body.projectId },
@@ -58,10 +47,6 @@ export async function POST(req: Request) {
         { status: 403 }
       );
     }
-
-    /* =========================
-       CREATE TASK
-    ========================= */
 
     const task = await prisma.task.create({
       data: {

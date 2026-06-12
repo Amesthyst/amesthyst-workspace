@@ -130,7 +130,6 @@ export default function DepartmentsPage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
         <div>
@@ -153,7 +152,6 @@ export default function DepartmentsPage() {
 
       </div>
 
-      {/* SEARCH */}
       <Input
         placeholder="Search department..."
         value={search}
@@ -162,7 +160,6 @@ export default function DepartmentsPage() {
         }
       />
 
-      {/* CREATE */}
       {creating && (
         <Card className="p-5 space-y-4">
 
@@ -212,7 +209,6 @@ export default function DepartmentsPage() {
         </Card>
       )}
 
-      {/* SUMMARY */}
       <div className="grid md:grid-cols-3 gap-4">
 
         <Card className="p-5">
@@ -254,7 +250,6 @@ export default function DepartmentsPage() {
 
       </div>
 
-      {/* EMPTY STATE */}
       {filtered.length === 0 && (
         <Card className="p-10 text-center">
 
@@ -270,7 +265,6 @@ export default function DepartmentsPage() {
         </Card>
       )}
 
-      {/* DEPARTMENT GRID */}
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 
         {filtered.map((d) => (

@@ -53,10 +53,8 @@ export default function KanbanBoard({
           onDragOver={(e) => e.preventDefault()}
           onDrop={() => onDrop(col)}
         >
-          {/* HEADER */}
           <h2 className="font-bold mb-3">{col}</h2>
 
-          {/* TASK LIST */}
           {tasks
             .filter((t: Task) => t.status === col)
             .map((task: Task) => (
@@ -71,7 +69,6 @@ export default function KanbanBoard({
               </div>
             ))}
 
-          {/* CREATE TASK INPUT */}
           {creatingColumn === col ? (
             <div className="mt-3 space-y-2">
               <input

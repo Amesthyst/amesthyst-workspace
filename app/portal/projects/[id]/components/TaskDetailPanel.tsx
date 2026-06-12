@@ -119,8 +119,6 @@ export default function TaskDetailPanel({
   return (
     <div className="bg-white border rounded-lg h-full overflow-auto">
 
-      {/* HEADER */}
-
       <div className="border-b p-4">
 
         <h2 className="text-lg font-bold">
@@ -135,8 +133,6 @@ export default function TaskDetailPanel({
       </div>
 
       <div className="p-4 space-y-5">
-
-        {/* TITLE */}
 
         <div>
 
@@ -159,8 +155,6 @@ export default function TaskDetailPanel({
           />
 
         </div>
-
-        {/* DESCRIPTION */}
 
         <div>
 
@@ -185,8 +179,6 @@ export default function TaskDetailPanel({
           />
 
         </div>
-
-        {/* STATUS */}
 
         <div>
 
@@ -225,8 +217,6 @@ export default function TaskDetailPanel({
 
         </div>
 
-        {/* PRIORITY */}
-
         <div>
 
           <label className="block text-sm font-medium mb-1">
@@ -264,8 +254,6 @@ export default function TaskDetailPanel({
 
         </div>
 
-        {/* DUE DATE */}
-
         <div>
 
           <label className="block text-sm font-medium mb-1">
@@ -295,8 +283,6 @@ export default function TaskDetailPanel({
           />
 
         </div>
-
-        {/* ASSIGNEE */}
 
         <div>
 
@@ -332,7 +318,6 @@ export default function TaskDetailPanel({
 
         </div>
 
-        {/* QUICK ACTIONS */}
 
         <div>
 
@@ -391,7 +376,6 @@ export default function TaskDetailPanel({
 
         </div>
 
-        {/* META */}
 
         <div className="border-t pt-4 text-xs text-gray-500 space-y-1">
 
@@ -405,7 +389,6 @@ export default function TaskDetailPanel({
 
         </div>
 
-        {/* SAVE */}
 
         <button
           onClick={saveChanges}

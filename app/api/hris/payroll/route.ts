@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
-// GET ALL PAYROLLS
 export async function GET(req: Request) {
   const user = await validateHRAccess();
 
@@ -28,7 +27,6 @@ export async function GET(req: Request) {
   return NextResponse.json(payrolls);
 }
 
-// CREATE PAYROLL
 export async function POST(req: Request) {
   const user = await validateHRAccess();
 

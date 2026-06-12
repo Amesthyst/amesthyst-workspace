@@ -41,7 +41,6 @@ export async function GET() {
   return NextResponse.json(leaves);
 }
 
-/* CREATE LEAVE REQUEST */
 export async function POST(req: Request) {
   const authUser = await validateHRAccess();
 
@@ -64,7 +63,6 @@ export async function POST(req: Request) {
   return NextResponse.json(leave);
 }
 
-/* UPDATE STATUS (APPROVE / REJECT) */
 export async function PATCH(req: Request) {
   const authUser = await validateHRAccess();
 

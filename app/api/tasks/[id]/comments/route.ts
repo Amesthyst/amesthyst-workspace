@@ -2,10 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
-/* ==================================================
-   CREATE TASK COMMENT
-================================================== */
-
 export async function POST(
   req: Request,
   {
@@ -34,10 +30,6 @@ export async function POST(
     const body =
       await req.json();
 
-    /* ==========================
-       VALIDATION
-    ========================== */
-
     if (
       !body.content ||
       !body.content.trim()
@@ -52,10 +44,6 @@ export async function POST(
         }
       );
     }
-
-    /* ==========================
-       TASK CHECK
-    ========================== */
 
     const task =
       await prisma.task.findUnique({
@@ -80,10 +68,6 @@ export async function POST(
       );
     }
 
-    /* ==========================
-       COMPANY SECURITY
-    ========================== */
-
     if (
       task.project.companyId !==
       user.companyId
@@ -98,10 +82,6 @@ export async function POST(
       );
     }
 
-    /* ==========================
-       CREATE COMMENT
-    ========================== */
-
     const comment =
       await prisma.taskComment.create({
         data: {
@@ -115,10 +95,6 @@ export async function POST(
           user: true,
         },
       });
-
-    /* ==========================
-       TASK ACTIVITY
-    ========================== */
 
     const employee =
       await prisma.employee.findUnique({
@@ -148,10 +124,6 @@ export async function POST(
         },
       });
     }
-
-    /* ==========================
-       AUDIT LOG
-    ========================== */
 
     if (
       user.companyId &&

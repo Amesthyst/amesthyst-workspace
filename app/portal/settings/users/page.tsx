@@ -55,7 +55,6 @@ export default function UsersPage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">
           Users & Roles
@@ -66,14 +65,12 @@ export default function UsersPage() {
         </p>
       </div>
 
-      {/* LOADING STATE */}
       {loading && (
         <p className="text-sm text-muted-foreground">
           Loading users...
         </p>
       )}
 
-      {/* GRID */}
       <div className="grid gap-4">
 
         {users.map((user) => {
@@ -93,7 +90,6 @@ export default function UsersPage() {
 
               <div className="flex justify-between items-start">
 
-                {/* USER INFO */}
                 <div>
                   <h3 className="font-semibold text-lg">
                     {user.name || "No Name"}
@@ -108,7 +104,6 @@ export default function UsersPage() {
                   </p>
                 </div>
 
-                {/* ROLE BADGE */}
                 <div>
                   <span
                     className={`
@@ -130,10 +125,8 @@ export default function UsersPage() {
 
               </div>
 
-              {/* ACTIONS */}
               <div className="mt-4 flex flex-wrap gap-2">
 
-                {/* OWNER LOCK MESSAGE */}
                 {isOwner ? (
                   <div className="text-xs text-muted-foreground italic">
                     Owner role is protected and cannot be modified

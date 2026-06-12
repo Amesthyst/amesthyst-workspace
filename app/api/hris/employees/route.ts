@@ -2,14 +2,10 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
-/**
- * SAFE EMPLOYEE NUMBER GENERATOR (inline version for API simplicity)
- */
 async function generateEmployeeNumber(companyId: string) {
   const year = new Date().getFullYear();
 
   return await prisma.$transaction(async (tx) => {
-    // get or create counter
     let counter = await tx.employeeNumberCounter.findUnique({
       where: {
         companyId_year: {
@@ -28,8 +24,6 @@ async function generateEmployeeNumber(companyId: string) {
         },
       });
     }
-
-    // increment safely
     const updated = await tx.employeeNumberCounter.update({
       where: {
         companyId_year: {
@@ -95,7 +89,6 @@ export async function POST(req: Request) {
   }
 
   try {
-    // 🔥 GENERATE EMPLOYEE NUMBER SAFELY
     const employeeNumber = await generateEmployeeNumber(
       body.companyId
     );
@@ -114,7 +107,6 @@ export async function POST(req: Request) {
 
         status: "ACTIVE",
 
-        // ✅ AUTO GENERATED FIELD
         employeeNumber,
       },
     });

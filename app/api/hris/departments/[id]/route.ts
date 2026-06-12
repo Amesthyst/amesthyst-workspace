@@ -157,7 +157,6 @@ export async function DELETE(
       );
     }
   
-    // Unassign all employees first
     await prisma.employee.updateMany({
       where: {
         departmentId: id,
@@ -167,7 +166,6 @@ export async function DELETE(
       },
     });
   
-    // Delete department
     await prisma.department.delete({
       where: {
         id,

@@ -4,7 +4,11 @@ import { NextResponse } from "next/server";
 function generateCode() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
-
+function generateEmployeeNumber() {
+  return `EMP-${Date.now()}-${Math.floor(
+    Math.random() * 1000
+  )}`;
+}
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -44,6 +48,7 @@ export async function POST(req: Request) {
 
     await prisma.employee.create({
       data: {
+        employeeNumber : generateEmployeeNumber(),
         companyId: company.id,
         userId,
         jobTitle: "Owner",

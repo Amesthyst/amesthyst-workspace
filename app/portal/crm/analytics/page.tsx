@@ -49,8 +49,6 @@ export default function CRMAnalyticsPage() {
         </p>
       </div>
 
-      {/* KPI CARDS */}
-
       <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-6 gap-4">
 
         <Card className="p-4">
@@ -114,8 +112,6 @@ export default function CRMAnalyticsPage() {
         </Card>
 
       </div>
-
-      {/* LEAD SOURCES */}
 
       <Card className="p-6">
 

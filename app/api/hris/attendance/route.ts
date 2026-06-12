@@ -34,7 +34,6 @@ export async function POST() {
     },
   });
 
-  // ================= CLOCK IN =================
   if (!attendance) {
     const workStart = new Date();
     workStart.setHours(WORK_START, 0, 0, 0);
@@ -57,7 +56,6 @@ export async function POST() {
     return NextResponse.json({ type: "CLOCK_IN", record });
   }
 
-  // ================= CLOCK OUT =================
   if (!attendance.clockOut) {
     const workMinutes = Math.floor(
       (now.getTime() - attendance.clockIn!.getTime()) / 60000

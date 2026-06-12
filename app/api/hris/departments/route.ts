@@ -29,7 +29,6 @@ export async function GET(req: Request) {
   return NextResponse.json(departments);
 }
 
-/* CREATE DEPARTMENT */
 export async function POST(req: Request) {
   const authUser = await validateHRAccess();
 

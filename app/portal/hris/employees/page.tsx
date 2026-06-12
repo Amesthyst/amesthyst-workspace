@@ -35,7 +35,6 @@ export default function EmployeesPage() {
   const [editJobTitle, setEditJobTitle] = useState("");
   const [saving, setSaving] = useState(false);
 
-  /* ---------------- LOAD ---------------- */
   async function loadEmployees() {
     if (!user?.companyId) return;
 
@@ -60,7 +59,6 @@ export default function EmployeesPage() {
     loadEmployees();
   }, [user]);
 
-  /* ---------------- FILTER ---------------- */
   const filtered = useMemo(() => {
     return employees.filter((emp) =>
       `${emp.user.name ?? ""} ${emp.user.email}`
@@ -69,13 +67,11 @@ export default function EmployeesPage() {
     );
   }, [employees, search]);
 
-  /* ---------------- STATS ---------------- */
   const total = employees.length;
   const active = employees.filter(
     (e) => e.status === "ACTIVE"
   ).length;
 
-  /* ---------------- EDIT ---------------- */
   function openEdit(emp: Employee) {
     setEditingEmployee(emp);
     setEditName(emp.user.name ?? "");
@@ -123,11 +119,9 @@ export default function EmployeesPage() {
     }
   }
 
-  /* ---------------- UI ---------------- */
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">
           Employee Directory
@@ -137,7 +131,6 @@ export default function EmployeesPage() {
         </p>
       </div>
 
-      {/* STATS */}
       <div className="grid md:grid-cols-2 gap-4">
 
         <Card className="p-5">
@@ -154,7 +147,6 @@ export default function EmployeesPage() {
 
       </div>
 
-      {/* SEARCH */}
       <Card className="p-4">
         <Input
           placeholder="Search employee..."
@@ -163,14 +155,12 @@ export default function EmployeesPage() {
         />
       </Card>
 
-      {/* LOADING */}
       {loading && (
         <Card className="p-6 text-center">
           Loading employees...
         </Card>
       )}
 
-      {/* LIST */}
       {!loading && (
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
 
@@ -226,14 +216,12 @@ export default function EmployeesPage() {
         </div>
       )}
 
-      {/* EMPTY */}
       {!loading && filtered.length === 0 && (
         <Card className="p-10 text-center">
           No employees found
         </Card>
       )}
 
-      {/* EDIT MODAL */}
       {editingEmployee && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
 

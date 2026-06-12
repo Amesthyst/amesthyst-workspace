@@ -29,7 +29,7 @@ export async function GET(req: Request) {
     pipeline[lead.status as keyof typeof pipeline]++;
 
     if (lead.status === "WON") {
-      revenue += 1000; // mock value per deal
+      revenue += 1000;
     }
   }
 

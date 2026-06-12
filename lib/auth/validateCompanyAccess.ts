@@ -13,8 +13,8 @@ export async function validateCompanyAccess() {
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id },
     include: {
-      role: true,        // ✅ IMPORTANT FIX
-      company: true,     // optional but recommended
+      role: true,        
+      company: true,     
     },
   });
 

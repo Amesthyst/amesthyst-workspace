@@ -43,9 +43,6 @@ export default function ActivitiesPage() {
   const [filterType, setFilterType] = useState("ALL");
   const [onlyToday, setOnlyToday] = useState(false);
 
-  // ---------------------------
-  // LOAD LEADS
-  // ---------------------------
   async function loadLeads() {
     if (!user?.companyId) return;
 
@@ -57,9 +54,6 @@ export default function ActivitiesPage() {
     setLeads(data);
   }
 
-  // ---------------------------
-  // LOAD ACTIVITIES
-  // ---------------------------
   async function loadActivities(leadId: string) {
     const res = await fetch(
       `/api/crm/activities?leadId=${leadId}`
@@ -69,9 +63,6 @@ export default function ActivitiesPage() {
     setActivities(data);
   }
 
-  // ---------------------------
-  // CREATE ACTIVITY
-  // ---------------------------
   async function createActivity() {
     if (!selectedLead) return;
 
@@ -94,7 +85,6 @@ export default function ActivitiesPage() {
   useEffect(() => {
     loadLeads();
 
-    // CMD + K shortcut
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
@@ -111,9 +101,6 @@ export default function ActivitiesPage() {
       window.removeEventListener("keydown", handleKeyDown);
   }, [user, leads]);
 
-  // ---------------------------
-  // SEARCH FILTER (debounced logic)
-  // ---------------------------
   const filteredLeads = useMemo(() => {
     const q = search.toLowerCase();
 
@@ -124,9 +111,6 @@ export default function ActivitiesPage() {
     );
   }, [leads, search]);
 
-  // ---------------------------
-  // ACTIVITY FILTERS
-  // ---------------------------
   const filteredActivities = useMemo(() => {
     return activities.filter((a) => {
       const matchType =
@@ -144,7 +128,6 @@ export default function ActivitiesPage() {
   return (
     <div className="h-full flex gap-4">
 
-      {/* LEFT PANEL */}
       <div className="w-80 border-r pr-4 space-y-3">
 
         <h2 className="font-bold text-lg">
@@ -189,7 +172,6 @@ export default function ActivitiesPage() {
         </div>
       </div>
 
-      {/* RIGHT PANEL */}
       <div className="flex-1 space-y-6">
 
         {!selectedLead ? (
@@ -198,7 +180,6 @@ export default function ActivitiesPage() {
           </div>
         ) : (
           <>
-            {/* HEADER */}
             <div className="border-b pb-3">
               <h1 className="text-2xl font-bold">
                 {selectedLead.name}
@@ -209,7 +190,6 @@ export default function ActivitiesPage() {
               </p>
             </div>
 
-            {/* FILTER BAR */}
             <div className="flex gap-2 flex-wrap">
 
               {["ALL", "CALL", "EMAIL", "MEETING"].map(
@@ -248,7 +228,6 @@ export default function ActivitiesPage() {
               </button>
             </div>
 
-            {/* CREATE ACTIVITY */}
             <Card className="p-4 space-y-3 max-w-md">
               <Input
                 placeholder="Type (CALL / EMAIL / MEETING)"
@@ -271,7 +250,6 @@ export default function ActivitiesPage() {
               </Button>
             </Card>
 
-            {/* TIMELINE */}
             <div className="space-y-3">
 
               {filteredActivities.length === 0 ? (

@@ -69,7 +69,6 @@ export default function PipelinePage() {
   return (
     <div className="space-y-6">
 
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">
           CRM Pipeline
@@ -80,7 +79,6 @@ export default function PipelinePage() {
         </p>
       </div>
 
-      {/* Pipeline */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
 
         {STATUSES.map((status) => (

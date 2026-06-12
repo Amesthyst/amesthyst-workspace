@@ -26,6 +26,7 @@ export async function POST() {
   const attendance = await prisma.attendance.create({
     data: {
       employeeId: employee.id,
+      date : today,
       clockIn: today,
     },
   });

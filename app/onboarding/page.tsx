@@ -10,17 +10,12 @@ export default function OnboardingPage() {
 
   const [mode, setMode] = useState<"create" | "join">("create");
 
-  // CREATE COMPANY
   const [name, setName] = useState("");
   const [industry, setIndustry] = useState("");
-
-  // JOIN COMPANY
   const [companyCode, setCompanyCode] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  /* ---------------- CREATE COMPANY ---------------- */
   async function createCompany() {
     setError("");
     setLoading(true);
@@ -58,7 +53,6 @@ export default function OnboardingPage() {
     }
   }
 
-  /* ---------------- JOIN COMPANY ---------------- */
   async function joinCompany() {
     setError("");
     setLoading(true);
@@ -100,7 +94,6 @@ export default function OnboardingPage() {
 
       <div className="w-full max-w-md bg-white border rounded-xl p-6">
 
-        {/* HEADER */}
         <h1 className="text-2xl font-bold">
           Welcome to Workspace
         </h1>
@@ -109,7 +102,6 @@ export default function OnboardingPage() {
           Create or join a company to continue
         </p>
 
-        {/* TAB SWITCH */}
         <div className="flex border rounded-lg mb-6 overflow-hidden">
 
           <button
@@ -135,14 +127,12 @@ export default function OnboardingPage() {
           </button>
         </div>
 
-        {/* ERROR */}
         {error && (
           <div className="mb-4 text-sm text-red-600 bg-red-50 border p-2 rounded">
             {error}
           </div>
         )}
 
-        {/* CREATE MODE */}
         {mode === "create" && (
           <div className="space-y-3">
             <input
@@ -169,7 +159,6 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* JOIN MODE */}
         {mode === "join" && (
           <div className="space-y-3">
             <input

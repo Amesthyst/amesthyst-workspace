@@ -166,7 +166,6 @@ export default function CRMPage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">
           CRM Leads
@@ -177,7 +176,6 @@ export default function CRMPage() {
         </p>
       </div>
 
-      {/* CREATE LEAD */}
       <Card className="p-6 space-y-4">
 
         <h2 className="font-semibold text-lg">
@@ -228,7 +226,6 @@ export default function CRMPage() {
 
       </Card>
 
-      {/* FILTER */}
       <Card className="p-4">
 
         <div className="flex flex-wrap gap-3">
@@ -282,7 +279,6 @@ export default function CRMPage() {
 
       </Card>
 
-      {/* SUMMARY */}
       <div className="grid md:grid-cols-4 gap-4">
 
         <Card className="p-5">
@@ -345,7 +341,6 @@ export default function CRMPage() {
 
       </div>
 
-      {/* TABLE */}
       <Card className="p-6">
 
         <div className="overflow-x-auto">

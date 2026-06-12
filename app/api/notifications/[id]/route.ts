@@ -1,12 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: {
+    params: Promise<{
+      id: string;
+    }>;
+  }
 ) {
   try {
+    const { id } = await context.params;
+
     const user = await validateHRAccess();
 
     if (!user) {
@@ -16,9 +22,10 @@ export async function PATCH(
       );
     }
 
-    const notification = await prisma.notification.findUnique({
-      where: { id: params.id },
-    });
+    const notification =
+      await prisma.notification.findUnique({
+        where: { id },
+      });
 
     if (!notification) {
       return NextResponse.json(
@@ -28,19 +35,28 @@ export async function PATCH(
     }
 
     await prisma.notification.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         isRead: true,
       },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+    });
   } catch (error) {
-    console.error("PATCH NOTIFICATION ERROR", error);
+    console.error(
+      "PATCH NOTIFICATION ERROR",
+      error
+    );
 
     return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
+      {
+        error: "Internal Server Error",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }

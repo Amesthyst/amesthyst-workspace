@@ -49,7 +49,6 @@ export default function Sidebar() {
   return (
     <aside className="w-72 border-r bg-sidebar text-sidebar-foreground flex flex-col">
 
-      {/* LOGO */}
       <div className=" h-16 border-b border-sidebar-border flex items-center px-6">
         <div>
           <h1 className="font-bold text-lg">
@@ -61,10 +60,8 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* NAVIGATION */}
       <nav className="flex-1 p-4 space-y-1">
 
-        {/* DASHBOARD */}
         <Link
           href="/portal/dashboard"
           className={`
@@ -82,7 +79,6 @@ export default function Sidebar() {
           {t(language, "dashboard")}
         </Link>
 
-        {/* CRM */}
         {canManageCRM(user) && (
           <div>
 
@@ -315,7 +311,6 @@ export default function Sidebar() {
             )}
           </div>
         )}
-        {/* PROJECTS */}
         {canManageProjects(user) && (
           <Link
             href="/portal/projects"
@@ -335,7 +330,6 @@ export default function Sidebar() {
           </Link>
         )}
 
-        {/* SETTINGS */}
         {canManageCompany(user) && (
           <Link
             href="/portal/settings"
@@ -357,7 +351,6 @@ export default function Sidebar() {
 
       </nav>
 
-      {/* FOOTER */}
       <div className="border-t border-sidebar-border p-4 space-y-3">
 
         <div>

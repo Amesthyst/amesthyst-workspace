@@ -57,7 +57,6 @@ export default function PayrollPage() {
     load();
   }, [user]);
 
-  // ADD PAYROLL
   async function addPayroll() {
     await fetch("/api/hris/payroll", {
       method: "POST",
@@ -79,7 +78,6 @@ export default function PayrollPage() {
     load();
   }
 
-  // UPDATE PAYROLL FIELD
   async function updatePayroll(id: string, payload: any) {
     await fetch(`/api/hris/payroll/${id}`, {
       method: "PATCH",
@@ -116,7 +114,6 @@ export default function PayrollPage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">Payroll System</h1>
         <p className="text-muted-foreground">
@@ -124,7 +121,6 @@ export default function PayrollPage() {
         </p>
       </div>
 
-      {/* ADD PAYROLL */}
       <Card className="p-4 space-y-3">
         <h2 className="font-bold">Add Payroll</h2>
 
@@ -163,7 +159,6 @@ export default function PayrollPage() {
         </Button>
       </Card>
 
-      {/* SUMMARY */}
       <Card className="p-4">
         <h2 className="font-bold">Total Paid Payroll</h2>
         <p className="text-green-600 font-bold text-lg">
@@ -171,7 +166,6 @@ export default function PayrollPage() {
         </p>
       </Card>
 
-      {/* TABLE HEADER */}
       <Card className="p-3 font-bold">
         <div className="grid grid-cols-6 text-sm">
           <span>Employee</span>
@@ -183,7 +177,6 @@ export default function PayrollPage() {
         </div>
       </Card>
 
-      {/* LIST */}
       <div className="space-y-3">
 
         {data.map((p) => (
@@ -191,12 +184,10 @@ export default function PayrollPage() {
 
             <div className="grid grid-cols-6 items-center gap-2 text-sm">
 
-              {/* EMPLOYEE */}
               <span className="font-medium">
                 {p.employee.user.name}
               </span>
 
-              {/* BASE */}
               <Input
                 value={p.baseSalary}
                 onChange={(e) =>
@@ -206,7 +197,6 @@ export default function PayrollPage() {
                 }
               />
 
-              {/* ALLOWANCE */}
               <Input
                 value={p.allowance}
                 onChange={(e) =>
@@ -216,7 +206,6 @@ export default function PayrollPage() {
                 }
               />
 
-              {/* DEDUCTION */}
               <Input
                 value={p.deduction}
                 onChange={(e) =>
@@ -226,17 +215,14 @@ export default function PayrollPage() {
                 }
               />
 
-              {/* TOTAL */}
               <span className="font-bold text-green-600">
                 {p.baseSalary + p.allowance - p.deduction}
               </span>
 
-              {/* STATUS + ACTION */}
               <div className="flex gap-2 items-center">
 
               <StatusBadge status={p.status} />
 
-              {/* APPROVE */}
               <Button
                 size="sm"
                 disabled={p.status !== "DRAFT"}
@@ -247,7 +233,6 @@ export default function PayrollPage() {
                 Approve
               </Button>
 
-              {/* REJECT */}
               <Button
                 size="sm"
                 variant="destructive"
@@ -259,7 +244,6 @@ export default function PayrollPage() {
                 Reject
               </Button>
 
-              {/* PAID */}
               <Button
                 size="sm"
                 disabled={p.status !== "APPROVED"}

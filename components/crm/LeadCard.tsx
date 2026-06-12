@@ -34,7 +34,6 @@ export default function LeadCard({
         onClick={onClick}
         className="space-y-3"
       >
-        {/* Header */}
         <div className="flex items-start justify-between">
           <h3 className="font-semibold">
             {lead.name}
@@ -51,13 +50,11 @@ export default function LeadCard({
           </Badge>
         </div>
 
-        {/* Email */}
         <p className="text-sm text-muted-foreground break-all">
           {lead.email || "No Email"}
         </p>
       </div>
 
-      {/* Actions */}
       {lead.status === "WON" && (
         <div className="mt-4">
           <Button

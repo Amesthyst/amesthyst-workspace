@@ -2,10 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { validateHRAccess } from "@/lib/auth/validateHRAccess";
 
-/* ==================================================
-   GET TASK
-================================================== */
-
 export async function GET(
   req: Request,
   {
@@ -94,10 +90,6 @@ export async function GET(
   }
 }
 
-/* ==================================================
-   PATCH TASK
-================================================== */
-
 export async function PATCH(
   req: Request,
   {
@@ -143,10 +135,6 @@ export async function PATCH(
       );
     }
 
-    /* ==========================
-       VALIDATE ASSIGNEE
-    ========================== */
-
     if (
       body.assigneeId
     ) {
@@ -172,10 +160,6 @@ export async function PATCH(
         );
       }
     }
-
-    /* ==========================
-       UPDATE TASK
-    ========================== */
 
     const updatedTask =
       await prisma.task.update({
@@ -232,9 +216,6 @@ export async function PATCH(
         },
       });
 
-    /* ==========================
-       TASK ACTIVITY
-    ========================== */
     const employee =
     await prisma.employee.findUnique({
       where: {
@@ -265,14 +246,6 @@ export async function PATCH(
         }
       );
     }
-
-    /* ==========================
-       AUDIT LOG
-    ========================== */
-
-    /* ==========================
-   AUDIT LOG (IMPROVED)
-========================== */
 
 if (user.companyId) {
   try {
@@ -310,10 +283,6 @@ if (user.companyId) {
     );
   }
 }
-
-/* ==================================================
-   DELETE TASK
-================================================== */
 
 export async function DELETE(
   req: Request,
@@ -363,10 +332,6 @@ export async function DELETE(
       );
     }
 
-    /* ==========================
-       COMPANY SECURITY
-    ========================== */
-
     if (
       task.project.companyId !==
       user.companyId
@@ -380,11 +345,6 @@ export async function DELETE(
         }
       );
     }
-
-    /* ==========================
-       DELETE EVERYTHING
-       INSIDE TRANSACTION
-    ========================== */
 
     await prisma.$transaction([
       prisma.taskComment.deleteMany({
@@ -412,16 +372,8 @@ export async function DELETE(
       }),
     ]);
 
- /* ==========================
-   AUDIT LOG + NOTIFICATION
-   (NON-BLOCKING)
-========================== */
-
 if (user.companyId && user.id) {
   try {
-    // ==========================
-    // AUDIT LOG
-    // ==========================
     await prisma.auditLog.create({
       data: {
         companyId: user.companyId,
@@ -432,11 +384,6 @@ if (user.companyId && user.id) {
       },
     });
 
-    // ==========================
-    // NOTIFICATION (ENTERPRISE)
-    // ==========================
-
-    // optional: find affected employees from task context
     const taskOwner = await prisma.task.findUnique({
       where: { id },
       select: {
@@ -457,7 +404,6 @@ if (user.companyId && user.id) {
     }
   } catch (err) {
     console.error("AUDIT / NOTIFICATION ERROR", err);
-    // non-blocking → jangan ganggu delete flow
   }
 }
 

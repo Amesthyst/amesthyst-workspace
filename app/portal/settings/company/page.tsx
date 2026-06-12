@@ -45,7 +45,6 @@ export default function CompanySettingsPage() {
         Company Settings
       </h1>
 
-      {/* COMPANY INFO */}
       <Card className="p-4 space-y-2">
 
         <div>
@@ -73,7 +72,6 @@ export default function CompanySettingsPage() {
 
       </Card>
 
-      {/* COMPANY CODE (IMPORTANT) */}
       <Card className="p-4 space-y-2 border-2 border-blue-500">
 
         <p className="text-sm text-gray-500">

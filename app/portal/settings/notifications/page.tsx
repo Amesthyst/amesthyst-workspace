@@ -51,7 +51,6 @@ export default function NotificationPage() {
   return (
     <div className="space-y-4 p-4">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-2xl font-bold">
           Notification Center
@@ -62,21 +61,18 @@ export default function NotificationPage() {
         </p>
       </div>
 
-      {/* EMPTY STATE */}
       {!loading && notifications.length === 0 && (
         <Card className="p-6 text-center text-gray-500">
           No notifications yet
         </Card>
       )}
 
-      {/* LOADING */}
       {loading && (
         <Card className="p-4 text-center">
           Loading notifications...
         </Card>
       )}
 
-      {/* LIST */}
       <div className="space-y-3">
         {notifications.map((n) => (
           <Card

@@ -90,8 +90,6 @@ export default function LeadDetailPage({
   return (
     <div className="space-y-6">
 
-      {/* LEAD INFO */}
-
       <Card className="p-6">
 
         <h1 className="text-2xl font-bold">
@@ -124,8 +122,6 @@ export default function LeadDetailPage({
 
       </Card>
 
-      {/* CREATE NOTE */}
-
       <Card className="p-6">
 
         <h2 className="font-semibold mb-4">
@@ -148,8 +144,6 @@ export default function LeadDetailPage({
         </Button>
 
       </Card>
-
-      {/* NOTES */}
 
       <Card className="p-6">
 

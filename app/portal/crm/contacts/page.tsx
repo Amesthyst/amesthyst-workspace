@@ -34,7 +34,6 @@ export default function ContactsPage() {
   useEffect(() => {
     loadContacts();
 
-    // 🔥 REAL-TIME CRM SYNC (from Pipeline conversion)
     const handler = () => {
       loadContacts();
     };
@@ -65,7 +64,6 @@ export default function ContactsPage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">
           Contacts
@@ -76,7 +74,6 @@ export default function ContactsPage() {
         </p>
       </div>
 
-      {/* SEARCH */}
       <div className="max-w-md">
         <Input
           placeholder="Search by name, email, or phone..."
@@ -87,7 +84,6 @@ export default function ContactsPage() {
         />
       </div>
 
-      {/* LIST */}
       <div className="grid gap-4">
 
         {filtered.length === 0 ? (

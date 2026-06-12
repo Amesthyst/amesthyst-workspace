@@ -208,7 +208,6 @@ export default function ProjectsPage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">
           Project Management
@@ -219,7 +218,7 @@ export default function ProjectsPage() {
         </p>
       </div>
 
-      {/* STATS */}
+
       <div className="grid md:grid-cols-4 gap-4">
 
         <Card className="p-4">
@@ -256,7 +255,6 @@ export default function ProjectsPage() {
 
       </div>
 
-      {/* CREATE PROJECT */}
       <Card className="p-4 space-y-3">
 
         <h2 className="font-semibold">
@@ -296,7 +294,6 @@ export default function ProjectsPage() {
 
       </Card>
 
-      {/* SEARCH */}
       <Input
         placeholder="Search projects..."
         value={search}
@@ -305,14 +302,12 @@ export default function ProjectsPage() {
         }
       />
 
-      {/* LOADING */}
       {loading && (
         <Card className="p-6 text-center">
           Loading projects...
         </Card>
       )}
 
-      {/* EMPTY STATE */}
       {!loading &&
         filteredProjects.length === 0 && (
           <Card className="p-6 text-center">
@@ -320,7 +315,6 @@ export default function ProjectsPage() {
           </Card>
         )}
 
-      {/* PROJECT GRID */}
       {!loading &&
         filteredProjects.length > 0 && (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -336,7 +330,6 @@ export default function ProjectsPage() {
                 }
               >
 
-                {/* INFO */}
                 <div>
                   <h2 className="font-bold text-lg">
                     {project.name}
@@ -348,7 +341,6 @@ export default function ProjectsPage() {
                   </p>
                 </div>
 
-                {/* STATUS */}
                 <div>
 
                   <label className="text-sm">
@@ -388,7 +380,6 @@ export default function ProjectsPage() {
 
                 </div>
 
-                {/* PROGRESS */}
                 <div>
 
                   <div className="flex justify-between text-sm">
@@ -412,7 +403,6 @@ export default function ProjectsPage() {
 
                 </div>
 
-                {/* TASK COUNT */}
                 <div className="flex justify-between items-center">
 
                   <div>

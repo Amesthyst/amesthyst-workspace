@@ -42,16 +42,12 @@ export default function DashboardPage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [statsLoading, setStatsLoading] = useState(true);
 
-  // 🟢 ATTENDANCE STATE (UNCHANGED FEATURE + ENHANCED SYNC)
   const [attendanceLoading, setAttendanceLoading] = useState(false);
   const [attendanceState, setAttendanceState] =
     useState<AttendanceState | null>(null);
 
   const [todayAttendance, setTodayAttendance] = useState<any>(null);
 
-  // -----------------------
-  // LOAD DATA
-  // -----------------------
   useEffect(() => {
     async function load() {
       if (!user?.companyId) return;
@@ -90,9 +86,6 @@ export default function DashboardPage() {
     loadAnalytics();
   }, [user]);
 
-  // -----------------------
-  // 🟢 LOAD TODAY ATTENDANCE (NEW FEATURE)
-  // -----------------------
   async function loadTodayAttendance() {
     if (!user?.companyId) return;
 
@@ -128,9 +121,6 @@ export default function DashboardPage() {
     loadTodayAttendance();
   }, [user]);
 
-  // -----------------------
-  // LOADING
-  // -----------------------
   if (loading || statsLoading) {
     return (
       <div className="space-y-2">
@@ -152,7 +142,6 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
 
-      {/* HEADER */}
       <div>
         <h1 className="text-3xl font-bold">
           Welcome back{user?.name ? `, ${user.name}` : ""}
@@ -163,7 +152,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* KPI SECTION */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {kpi.map((item) => (
           <Card
@@ -181,10 +169,8 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* ANALYTICS SECTION */}
       <div className="grid lg:grid-cols-2 gap-6">
 
-        {/* PIPELINE */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold mb-4">
             Deal Stages
@@ -200,7 +186,6 @@ export default function DashboardPage() {
           )}
         </Card>
 
-        {/* INSIGHTS */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold mb-4">
             Sales Insights
@@ -233,10 +218,8 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* MAIN GRID */}
       <div className="grid lg:grid-cols-3 gap-6">
 
-        {/* ACTIVITY */}
         <Card className="p-6 lg:col-span-2">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">
@@ -281,10 +264,8 @@ export default function DashboardPage() {
           </div>
         </Card>
 
-        {/* RIGHT PANEL */}
         <div className="space-y-6">
 
-          {/* 🟢 ATTENDANCE CARD (ENHANCED - NO UX CHANGE) */}
           <Card className="p-6 space-y-4 border-l-4 border-primary">
 
             <div>
@@ -297,7 +278,6 @@ export default function DashboardPage() {
               </p>
             </div>
 
-            {/* STATUS */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
                 Status
@@ -320,7 +300,6 @@ export default function DashboardPage() {
               </span>
             </div>
 
-            {/* BUTTON */}
             <Button
               className="w-full"
               disabled={attendanceLoading}
@@ -344,7 +323,6 @@ export default function DashboardPage() {
 
                   setAttendanceState(data);
 
-                  // 🔥 SYNC WITH DATABASE (NEW)
                   loadTodayAttendance();
 
                   if (data.type === "CLOCK_IN") {
@@ -366,7 +344,6 @@ export default function DashboardPage() {
 
           </Card>
 
-          {/* QUICK ACTIONS */}
           <Card className="p-6 space-y-3">
             <h2 className="text-lg font-semibold">
               Quick Actions
