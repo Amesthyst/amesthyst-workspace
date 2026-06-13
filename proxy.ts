@@ -2,34 +2,87 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-export function proxy(request: NextRequest) {
+export async function proxy(
+  request: NextRequest
+) {
+  let response =
+    NextResponse.next();
 
-  const { pathname } = request.nextUrl;
+  const supabase =
+    createServerClient(
+      process.env
+        .NEXT_PUBLIC_SUPABASE_URL!,
+      process.env
+        .NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(
+            cookiesToSet
+          ) {
+            cookiesToSet.forEach(
+              ({
+                name,
+                value,
+                options,
+              }) => {
+                response.cookies.set(
+                  name,
+                  value,
+                  options
+                );
+              }
+            );
+          },
+        },
+      }
+    );
+
+  const {
+    data: { user },
+  } =
+    await supabase.auth.getUser();
+
+  const { pathname } =
+    request.nextUrl;
 
   const isAuthPage =
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/register");
+    pathname.startsWith(
+      "/login"
+    ) ||
+    pathname.startsWith(
+      "/register"
+    );
 
   const isProtected =
-    pathname.startsWith("/portal") ||
-    pathname.startsWith("/onboarding");
+    pathname.startsWith(
+      "/portal"
+    ) ||
+    pathname.startsWith(
+      "/onboarding"
+    );
 
-  const userToken =
-    request.cookies.get("sb-access-token")?.value;
-
-  if (!userToken && isProtected) {
+  if (!user && isProtected) {
     return NextResponse.redirect(
-      new URL("/login", request.url)
+      new URL(
+        "/login",
+        request.url
+      )
     );
   }
 
-  if (userToken && isAuthPage) {
+  if (user && isAuthPage) {
     return NextResponse.redirect(
-      new URL("/portal/dashboard", request.url)
+      new URL(
+        "/portal/dashboard",
+        request.url
+      )
     );
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
